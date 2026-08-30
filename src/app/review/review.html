@@ -1,0 +1,192 @@
+<div class="review-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <span class="badge">AI POWERED REVIEW INTELLIGENCE</span>
+
+      <h1>Customer Reviews</h1>
+
+      <p>
+        Analyze customer feedback, identify problems and generate
+        AI-powered solutions.
+      </p>
+    </div>
+
+    <button class="assistant-btn">
+      ✨ AI Assistant
+    </button>
+  </div>
+
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+
+    <!-- Total -->
+    <div class="stat-card">
+      <div class="stat-icon total-icon">
+        📊
+      </div>
+
+      <div>
+        <p>Total Reviews</p>
+        <h2>{{ reviews.length }}</h2>
+        <span>All customer feedback</span>
+      </div>
+    </div>
+
+
+    <!-- Positive -->
+    <div class="stat-card positive-card">
+      <div class="stat-icon positive-icon">
+        👍
+      </div>
+
+      <div>
+        <p>Positive</p>
+        <h2>{{ positiveCount }}</h2>
+        <span>Happy customers</span>
+      </div>
+    </div>
+
+
+    <!-- Negative -->
+    <div class="stat-card negative-card">
+      <div class="stat-icon negative-icon">
+        👎
+      </div>
+
+      <div>
+        <p>Negative</p>
+        <h2>{{ negativeCount }}</h2>
+        <span>Needs attention</span>
+      </div>
+    </div>
+
+
+    <!-- Neutral -->
+    <div class="stat-card neutral-card">
+      <div class="stat-icon neutral-icon">
+        😐
+      </div>
+
+      <div>
+        <p>Neutral</p>
+        <h2>{{ neutralCount }}</h2>
+        <span>Mixed feedback</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Reviews -->
+  <div class="reviews-container">
+
+    <div
+      class="review-card"
+      *ngFor="let review of reviews"
+    >
+
+      <!-- Review Header -->
+      <div class="review-top">
+
+        <div class="customer-info">
+
+          <div class="avatar">
+            {{ review.reviewerName?.charAt(0)?.toUpperCase() }}
+          </div>
+
+          <div>
+            <h3>{{ review.reviewerName }}</h3>
+
+            <span class="summary">
+              {{ review.summary }}
+            </span>
+          </div>
+
+        </div>
+
+
+        <!-- Rating -->
+        <div
+          class="rating"
+          [ngClass]="{
+            'rating-positive': review.rating >= 4,
+            'rating-negative': review.rating <= 2,
+            'rating-neutral': review.rating === 3
+          }"
+        >
+          ⭐ {{ review.rating }}/5
+        </div>
+
+      </div>
+
+
+      <!-- Review -->
+      <div class="review-content">
+
+        <p>
+          {{ review.reviewText }}
+        </p>
+
+      </div>
+
+
+      <!-- AI Analysis -->
+      <div class="ai-analysis">
+
+        <div class="analysis-header">
+          <span>✨ AI ANALYSIS</span>
+        </div>
+
+
+        <div class="analysis-grid">
+
+          <div class="analysis-item">
+            <label>Problem</label>
+            <p>{{ review.problem || 'Not analyzed yet' }}</p>
+          </div>
+
+
+          <div class="analysis-item">
+            <label>Category</label>
+            <p>{{ review.category || 'General' }}</p>
+          </div>
+
+
+          <div class="analysis-item">
+            <label>Reason</label>
+            <p>{{ review.reason || 'Not available' }}</p>
+          </div>
+
+
+          <div class="analysis-item solution-box">
+            <label>Recommended Solution</label>
+            <p>
+              {{ review.solution || 'AI solution pending' }}
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- Footer -->
+      <div class="review-footer">
+
+        <span class="review-status">
+          ● AI Analyzed
+        </span>
+
+        <button class="email-btn" (click)="sendEmail(review)">
+          ✉ Send an Email
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,44 @@
+.page { max-width: 960px; }
+
+.page-head h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+  letter-spacing: -0.03em;
+}
+
+.page-head p {
+  margin: 0 0 20px;
+  color: #6b7280;
+}
+
+.help-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e8ecf4;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(23, 32, 51, 0.04);
+  padding: 20px;
+}
+
+.card h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.card p {
+  margin: 0;
+  color: #6b7280;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+@media (max-width: 720px) {
+  .help-grid {
+    grid-template-columns: 1fr;
+  }
+}

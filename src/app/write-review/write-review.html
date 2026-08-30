@@ -1,0 +1,68 @@
+<section class="page">
+  <div class="page-head">
+    <div>
+      <h1>Write a Review</h1>
+      <p>Share product feedback with rating, category, and a detailed review.</p>
+    </div>
+  </div>
+
+  <article class="card form-card">
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="form-grid">
+        <label>
+          <span>Product name</span>
+          <input type="text" formControlName="productName" placeholder="e.g. Helio Wireless Headphones" />
+          @if (form.controls.productName.touched && form.controls.productName.invalid) {
+            <small>Enter a product name.</small>
+          }
+        </label>
+
+        <label>
+          <span>Product category</span>
+          <select formControlName="productCategory">
+            <option value="" disabled>Select a category</option>
+            @for (category of categories; track category) {
+              <option [value]="category">{{ category }}</option>
+            }
+          </select>
+          @if (form.controls.productCategory.touched && form.controls.productCategory.invalid) {
+            <small>Choose a category.</small>
+          }
+        </label>
+      </div>
+
+      <div class="rating-field">
+        <span>Rating</span>
+        <div class="stars">
+          @for (star of [1, 2, 3, 4, 5]; track star) {
+            <button type="button" [class.active]="(form.value.rating || 0) >= star" (click)="setRating(star)">
+              ★
+            </button>
+          }
+        </div>
+        <em>{{ form.value.rating }}/5</em>
+      </div>
+
+      <label class="full">
+        <span>Review</span>
+        <textarea formControlName="review" rows="6" placeholder="Describe the product experience, quality, and anything the team should know."></textarea>
+        @if (form.controls.review.touched && form.controls.review.invalid) {
+          <small>Write at least 10 characters.</small>
+        }
+      </label>
+
+      @if (successMessage) {
+        <div class="alert success">{{ successMessage }}</div>
+      }
+      @if (errorMessage) {
+        <div class="alert error">{{ errorMessage }}</div>
+      }
+
+      <div class="form-actions">
+        <button class="primary" type="submit" [disabled]="submitting">
+          {{ submitting ? 'Submitting…' : 'Publish review' }}
+        </button>
+      </div>
+    </form>
+  </article>
+</section>

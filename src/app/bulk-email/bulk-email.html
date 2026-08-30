@@ -1,0 +1,319 @@
+<div class="reviews-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <div class="ai-badge">
+        <span class="pulse-dot"></span> AI-POWERED REVIEW TRIAGE & RESOLUTION
+      </div>
+      <h1>Customer Reviews & Action Center</h1>
+      <p>Analyze non-positive customer feedback (Neutral & Negative), inspect AI problem summaries, and send targeted email solutions.</p>
+    </div>
+  </div>
+
+  <!-- Top 5 Filters Section -->
+  <div class="filter-card">
+    <div class="filter-header">
+      <h3>Filter Reviews</h3>
+      <span class="filter-sub">Select criteria to query feedback payload</span>
+    </div>
+
+    <div class="filters-grid">
+      <!-- 1. Rating Filter -->
+      <div class="filter-group">
+        <label>1. Rating</label>
+        <select class="form-control" [(ngModel)]="selectedRating">
+          <option value="all">All Ratings (1 - 5)</option>
+          <option value="1">⭐ 1 Star (Negative)</option>
+          <option value="2">⭐⭐ 2 Stars (Negative)</option>
+          <option value="3">⭐⭐⭐ 3 Stars (Neutral)</option>
+          <option value="4">⭐⭐⭐⭐ 4 Stars</option>
+          <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
+        </select>
+      </div>
+
+      <!-- 2. Product Filter -->
+      <div class="filter-group">
+        <label>2. Product</label>
+        <select class="form-control" [(ngModel)]="selectedProduct">
+          <option value="all">All Products ({{ productsList.length }})</option>
+          @for (p of productsList; track p) {
+            <option [value]="p">{{ p }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- 3. Severity Filter -->
+      <div class="filter-group">
+        <label>3. Severity</label>
+        <select class="form-control" [(ngModel)]="selectedSeverity">
+          <option value="all">All Severities</option>
+          <option value="High">🔴 High</option>
+          <option value="Medium">🟡 Medium</option>
+          <option value="Low">🔵 Low</option>
+        </select>
+      </div>
+
+      <!-- 4. Records Per Page Selector -->
+      <div class="filter-group">
+        <label>4. Records Per Page</label>
+        <select class="form-control" [(ngModel)]="recordsPerPage" (change)="onRecordsPerPageChange()">
+          <option [ngValue]="10">10 Records per page</option>
+          <option [ngValue]="20">20 Records per page</option>
+        </select>
+      </div>
+
+      <!-- 5. Show & Clear Action Buttons -->
+      <div class="filter-actions">
+        <button class="btn btn-primary" type="button" (click)="onShowFilter()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+          </svg>
+          Show
+        </button>
+
+        <button class="btn btn-secondary" type="button" (click)="onClearFilter()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+          Clear
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Records Counter Bar -->
+  <div class="counter-bar">
+    <div class="count-info">
+      Showing <strong>{{ displayedReviews.length }}</strong> of <strong>{{ totalRecordsCount }}</strong> Neutral & Negative Reviews
+      <span class="badge-tag">Positive Reviews Skipped</span>
+    </div>
+    <div class="page-indicator">
+      Page <strong>{{ currentPage }}</strong> of <strong>{{ totalPages }}</strong>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <p>Fetching review intelligence payload from /data API...</p>
+    </div>
+  }
+
+  <!-- Review Cards List -->
+  <div class="reviews-list">
+    @for (review of displayedReviews; track review.review_id) {
+      <article class="review-card">
+
+        <!-- Header Meta Info Row -->
+        <div class="card-meta-header">
+          <div class="customer-info">
+            <div class="avatar-circle">
+              @if (review.reviewer_name) {
+                {{ review.reviewer_name.charAt(0).toUpperCase() }}
+              } @else {
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+              }
+            </div>
+            <div class="user-details">
+              <h3>{{ review.reviewer_name || 'Anonymous Customer' }}</h3>
+              <div class="meta-tags">
+                <span class="meta-item source">Source: <strong>{{ review.source | uppercase }}</strong></span>
+                <span class="meta-item product">Product: <strong>{{ review.product }}</strong></span>
+                <span class="meta-item date">Date: {{ review.review_date }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Badges Column -->
+          <div class="badges-col">
+            <div 
+              class="rating-pill"
+              [class.neg]="review.rating <= 2"
+              [class.neu]="review.rating === 3"
+            >
+              ⭐ {{ review.rating }}/5
+            </div>
+
+            <div 
+              class="sentiment-pill"
+              [class.neg]="review.sentiment === 'Negative'"
+              [class.neu]="review.sentiment === 'Neutral'"
+            >
+              {{ review.sentiment }}
+            </div>
+
+            @if (review.severity) {
+              <div 
+                class="severity-pill"
+                [class.high]="review.severity === 'High'"
+                [class.med]="review.severity === 'Medium'"
+                [class.low]="review.severity === 'Low'"
+              >
+                Severity: {{ review.severity }}
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Review Text Content -->
+        <div class="review-body">
+          <p class="review-text">"{{ review.review_text }}"</p>
+        </div>
+
+        <!-- AI Analysis Section -->
+        <div class="ai-analysis-box">
+          <div class="analysis-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+            </svg>
+            ✨ AI ANALYSIS & RECOMMENDATIONS
+          </div>
+
+          <div class="analysis-grid">
+            <div class="analysis-block">
+              <label>PROBLEM SUMMARY</label>
+              <p>{{ review.problem_summary || 'No specific problem extracted' }}</p>
+            </div>
+
+            <div class="analysis-block">
+              <label>ISSUE CATEGORY</label>
+              <p class="category-text">{{ review.issue_type || 'Product Quality' }}</p>
+            </div>
+
+            <div class="analysis-block full-width solution-box">
+              <label>RECOMMENDED SOLUTION</label>
+              <p>{{ review.recommended_solution || 'Pending AI action proposal' }}</p>
+            </div>
+          </div>
+
+          <div class="model-footnote">
+            AI Model: <strong>{{ review.model_used }}</strong> | Prediction: <strong>{{ review.best_model_prediction }}</strong>
+          </div>
+        </div>
+
+        <!-- Footer Action Row -->
+        <div class="card-footer">
+          <span class="ai-status">
+            <span class="dot-green"></span> AI Analyzed & Flagged
+          </span>
+
+          <button class="btn btn-email" (click)="openEmailModal(review)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <path d="m22 7-10 7L2 7"/>
+            </svg>
+            Send an Email
+          </button>
+        </div>
+
+      </article>
+    }
+
+    @if (displayedReviews.length === 0 && !loading) {
+      <div class="no-results-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M8 15s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/>
+        </svg>
+        <h3>No Reviews Found</h3>
+        <p>No neutral or negative reviews match the selected filter criteria.</p>
+        <button class="btn btn-secondary" type="button" (click)="onClearFilter()">Reset Filters</button>
+      </div>
+    }
+  </div>
+
+  <!-- Pagination Controls -->
+  @if (totalPages > 1) {
+    <div class="pagination-wrap">
+      <button 
+        class="btn btn-pagination" 
+        [disabled]="currentPage === 1" 
+        (click)="goToPage(currentPage - 1)"
+      >
+        ‹ Previous
+      </button>
+
+      <div class="page-numbers">
+        @for (p of [].constructor(totalPages); track $index) {
+          <button 
+            class="page-num" 
+            [class.active]="currentPage === ($index + 1)"
+            (click)="goToPage($index + 1)"
+          >
+            {{ $index + 1 }}
+          </button>
+        }
+      </div>
+
+      <button 
+        class="btn btn-pagination" 
+        [disabled]="currentPage === totalPages" 
+        (click)="goToPage(currentPage + 1)"
+      >
+        Next ›
+      </button>
+    </div>
+  }
+
+  <!-- Send Email Dialog Modal -->
+  @if (showEmailModal) {
+    <div class="modal-backdrop" (click)="closeEmailModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Send Resolution Email</h3>
+          <button class="close-btn" type="button" (click)="closeEmailModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Recipient Email</label>
+            <input type="email" class="form-control" [(ngModel)]="recipientEmail" placeholder="customer@example.com" />
+          </div>
+
+          <div class="form-group">
+            <label>Problem Summary (Payload)</label>
+            <textarea class="form-control" rows="3" [(ngModel)]="emailSubject"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Suggested Solution</label>
+            <textarea class="form-control" rows="4" [(ngModel)]="emailSolution"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" (click)="closeEmailModal()">Cancel</button>
+          <button class="btn btn-primary" type="button" [disabled]="sendingEmail" (click)="sendEmailFromModal()">
+            @if (sendingEmail) { Sending... } @else { Send Email Now }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Professional Success Dialog Alert Modal -->
+  @if (showSuccessAlert) {
+    <div class="pro-alert-backdrop" (click)="closeSuccessAlert()">
+      <div class="pro-alert-card" (click)="$event.stopPropagation()">
+        <div class="pro-alert-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+
+        <div class="pro-alert-content">
+          <h3>Email Sent Successfully!</h3>
+          <p>{{ successAlertMessage }}</p>
+        </div>
+
+        <div class="pro-alert-footer">
+          <button class="btn btn-pro-ok" type="button" (click)="closeSuccessAlert()">OK, Continue</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
