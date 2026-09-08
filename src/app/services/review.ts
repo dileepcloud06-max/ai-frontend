@@ -18,7 +18,7 @@ export interface NewReviewPayload {
   providedIn: 'root'
 })
 export class ReviewService {
-
+  //Base Urls 
   private apiUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net/data';
   private dataUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net/data';
   private newReviewUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net/newreview';
