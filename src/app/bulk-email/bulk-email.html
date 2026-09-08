@@ -1,4 +1,5 @@
 <div class="reviews-page">
+
   <!-- Header -->
   <div class="page-header">
     <div>
@@ -6,92 +7,9 @@
         <span class="pulse-dot"></span> AI-POWERED REVIEW TRIAGE & RESOLUTION
       </div>
       <h1>Customer Reviews & Action Center</h1>
-      <p>Analyze non-positive customer feedback (Neutral & Negative), inspect AI problem summaries, and send targeted email solutions.</p>
+      <p>Analyze customer feedback, inspect AI problem summaries, and send targeted email solutions.</p>
     </div>
   </div>
-
-  <!-- Top 5 Filters Section -->
-  <div class="filter-card">
-    <div class="filter-header">
-      <h3>Filter Reviews</h3>
-      <span class="filter-sub">Select criteria to query feedback payload</span>
-    </div>
-
-    <div class="filters-grid">
-      <!-- 1. Rating Filter -->
-      <div class="filter-group">
-        <label>1. Rating</label>
-        <select class="form-control" [(ngModel)]="selectedRating">
-          <option value="all">All Ratings (1 - 5)</option>
-          <option value="1">⭐ 1 Star (Negative)</option>
-          <option value="2">⭐⭐ 2 Stars (Negative)</option>
-          <option value="3">⭐⭐⭐ 3 Stars (Neutral)</option>
-          <option value="4">⭐⭐⭐⭐ 4 Stars</option>
-          <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
-        </select>
-      </div>
-
-      <!-- 2. Product Filter -->
-      <div class="filter-group">
-        <label>2. Product</label>
-        <select class="form-control" [(ngModel)]="selectedProduct">
-          <option value="all">All Products ({{ productsList.length }})</option>
-          @for (p of productsList; track p) {
-            <option [value]="p">{{ p }}</option>
-          }
-        </select>
-      </div>
-
-      <!-- 3. Severity Filter -->
-      <div class="filter-group">
-        <label>3. Severity</label>
-        <select class="form-control" [(ngModel)]="selectedSeverity">
-          <option value="all">All Severities</option>
-          <option value="High">🔴 High</option>
-          <option value="Medium">🟡 Medium</option>
-          <option value="Low">🔵 Low</option>
-        </select>
-      </div>
-
-      <!-- 4. Records Per Page Selector -->
-      <div class="filter-group">
-        <label>4. Records Per Page</label>
-        <select class="form-control" [(ngModel)]="recordsPerPage" (change)="onRecordsPerPageChange()">
-          <option [ngValue]="10">10 Records per page</option>
-          <option [ngValue]="20">20 Records per page</option>
-        </select>
-      </div>
-
-      <!-- 5. Show & Clear Action Buttons -->
-      <div class="filter-actions">
-        <button class="btn btn-primary" type="button" (click)="onShowFilter()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
-          </svg>
-          Show
-        </button>
-
-        <button class="btn btn-secondary" type="button" (click)="onClearFilter()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-          </svg>
-          Clear
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Records Counter Bar -->
-  <div class="counter-bar">
-    <div class="count-info">
-      Showing <strong>{{ displayedReviews.length }}</strong> of <strong>{{ totalRecordsCount }}</strong> Neutral & Negative Reviews
-      <span class="badge-tag">Positive Reviews Skipped</span>
-    </div>
-    <div class="page-indicator">
-      Page <strong>{{ currentPage }}</strong> of <strong>{{ totalPages }}</strong>
-    </div>
-  </div>
-
   <!-- Loading State -->
   @if (loading) {
     <div class="loading-box">
@@ -133,14 +51,16 @@
               class="rating-pill"
               [class.neg]="review.rating <= 2"
               [class.neu]="review.rating === 3"
+              [class.pos]="review.rating >= 4"
             >
               ⭐ {{ review.rating }}/5
             </div>
 
             <div 
               class="sentiment-pill"
-              [class.neg]="review.sentiment === 'Negative'"
-              [class.neu]="review.sentiment === 'Neutral'"
+              [class.neg]="review.sentiment?.toLowerCase() === 'negative'"
+              [class.neu]="review.sentiment?.toLowerCase() === 'neutral'"
+              [class.pos]="review.sentiment?.toLowerCase() === 'positive'"
             >
               {{ review.sentiment }}
             </div>
@@ -148,9 +68,9 @@
             @if (review.severity) {
               <div 
                 class="severity-pill"
-                [class.high]="review.severity === 'High'"
-                [class.med]="review.severity === 'Medium'"
-                [class.low]="review.severity === 'Low'"
+                [class.high]="review.severity?.toLowerCase() === 'high'"
+                [class.med]="review.severity?.toLowerCase() === 'medium'"
+                [class.low]="review.severity?.toLowerCase() === 'low'"
               >
                 Severity: {{ review.severity }}
               </div>
@@ -161,6 +81,11 @@
         <!-- Review Text Content -->
         <div class="review-body">
           <p class="review-text">"{{ review.review_text }}"</p>
+          @if (review.img_url) {
+            <button class="view-image-link" type="button" (click)="openImageModal(review.img_url)">
+              View image
+            </button>
+          }
         </div>
 
         <!-- AI Analysis Section -->
@@ -175,7 +100,7 @@
           <div class="analysis-grid">
             <div class="analysis-block">
               <label>PROBLEM SUMMARY</label>
-              <p>{{ review.problem_summary || 'No specific problem extracted' }}</p>
+              <p>{{ review.problem_summary || 'Not available in API response' }}</p>
             </div>
 
             <div class="analysis-block">
@@ -185,7 +110,7 @@
 
             <div class="analysis-block full-width solution-box">
               <label>RECOMMENDED SOLUTION</label>
-              <p>{{ review.recommended_solution || 'Pending AI action proposal' }}</p>
+              <p>{{ review.recommended_solution || 'Not available in API response' }}</p>
             </div>
           </div>
 
@@ -219,7 +144,7 @@
           <path d="M8 15s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/>
         </svg>
         <h3>No Reviews Found</h3>
-        <p>No neutral or negative reviews match the selected filter criteria.</p>
+        <p>No reviews match the selected filter criteria.</p>
         <button class="btn btn-secondary" type="button" (click)="onClearFilter()">Reset Filters</button>
       </div>
     }
@@ -289,6 +214,23 @@
           <button class="btn btn-primary" type="button" [disabled]="sendingEmail" (click)="sendEmailFromModal()">
             @if (sendingEmail) { Sending... } @else { Send Email Now }
           </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (showImageModal && selectedImageUrl) {
+    <div class="image-modal-backdrop" (click)="closeImageModal()">
+      <div class="image-modal-card" (click)="$event.stopPropagation()">
+        <div class="image-modal-header">
+          <h3>Review Image</h3>
+          <button class="close-btn" type="button" aria-label="Close image preview" (click)="closeImageModal()">×</button>
+        </div>
+        <div class="image-modal-body">
+          <img [src]="selectedImageUrl" alt="Review product" />
+        </div>
+        <div class="image-modal-footer">
+          <button class="btn btn-secondary" type="button" (click)="closeImageModal()">Close</button>
         </div>
       </div>
     </div>

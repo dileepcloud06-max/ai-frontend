@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ReviewService } from '../services/review';
 
 export interface ReviewItem {
@@ -23,12 +24,13 @@ export interface ReviewItem {
   best_model_prediction: string;
   model_used: string;
   processed_timestamp?: string;
+  img_url?: string | null;
 }
 
 @Component({
   selector: 'app-bulk-email',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
   templateUrl: './bulk-email.html',
   styleUrls: ['./bulk-email.css']
 })
@@ -74,6 +76,9 @@ export class BulkEmailComponent implements OnInit {
   emailSubject: string = '';
   emailSolution: string = '';
   sendingEmail: boolean = false;
+
+  showImageModal = false;
+  selectedImageUrl: string | null = null;
 
   // Success Notification Popup (Matching Screenshot)
   showSuccessAlert: boolean = false;
@@ -349,7 +354,7 @@ export class BulkEmailComponent implements OnInit {
     });
   }
 
-  // Filter raw data: SKIP POSITIVE REVIEWS! Show Neutral & Negative reviews ONLY!
+  // Normalize every row returned by the API before applying optional filters.
   processRawData(data: any[]): void {
     const parsed: ReviewItem[] = data.map((item: any) => ({
       review_id: item.review_id || item.id || String(Math.random()),
@@ -363,8 +368,9 @@ export class BulkEmailComponent implements OnInit {
       sentiment: item.sentiment || (Number(item.rating) <= 2 ? 'Negative' : 'Neutral'),
       issue_type: item.issue_type || item.category || 'Product Issue',
       severity: item.severity || (Number(item.rating) === 1 ? 'High' : 'Medium'),
-      problem_summary: item.problem_summary || item.problem || 'Customer reported dissatisfaction requiring resolution.',
-      recommended_solution: item.recommended_solution || item.solution || 'Inspect item condition, offer replacement unit or customer support follow-up.',
+      problem_summary: item.problem_summary || item.problem || null,
+      recommended_solution: item.recommended_solution || item.solution || null,
+      img_url: item.img_url || item.url || null,
       priority: item.priority || (Number(item.rating) === 1 ? 'High' : 'Medium'),
       best_model_prediction: item.best_model_prediction || item.sentiment || 'Negative',
       model_used: item.model_used || 'databricks-meta-llama-3-1-8b-instruct'
@@ -377,14 +383,9 @@ export class BulkEmailComponent implements OnInit {
     this.applyFiltersAndPagination();
   }
 
-  // Apply Filter Controls
+  // Apply only the filters selected by the user. The default view shows all API rows.
   applyFiltersAndPagination(): void {
     let list = this.allReviews.filter(r => {
-      // RULE: Skip positive reviews! Show only Neutral and Negative reviews
-      const isNonPositive = r.sentiment !== 'Positive' && r.rating <= 3;
-      // Allow explicit rating filter if user chose 4 or 5, else default to non-positive
-      if (this.selectedRating === 'all' && !isNonPositive) return false;
-
       // Rating filter
       if (this.selectedRating !== 'all' && r.rating !== Number(this.selectedRating)) {
         return false;
@@ -462,6 +463,20 @@ export class BulkEmailComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  openImageModal(imageUrl: string): void {
+    this.selectedImageUrl = imageUrl;
+    this.showImageModal = true;
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+  }
+
+  closeImageModal(): void {
+    this.showImageModal = false;
+    this.selectedImageUrl = null;
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+  }
+
   lastSentRecipient: string = '';
 
   // Send Email Action
@@ -476,7 +491,8 @@ export class BulkEmailComponent implements OnInit {
     const emailPayload = {
       email: this.recipientEmail.trim(),
       payload: this.selectedReviewForEmail.problem_summary || this.selectedReviewForEmail.review_text,
-      solution: this.emailSolution || this.selectedReviewForEmail.recommended_solution || 'Resolution provided'
+      solution: this.emailSolution || this.selectedReviewForEmail.recommended_solution || 'Resolution provided',
+      review_id: this.selectedReviewForEmail.review_id
     };
 
     this.reviewService.sendEmail(emailPayload).subscribe({
@@ -489,11 +505,9 @@ export class BulkEmailComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.warn("Direct email service error fallback:", err);
+        console.warn("Direct email service error:", err);
         this.sendingEmail = false;
-        this.showEmailModal = false;
-        this.selectedReviewForEmail = null;
-        this.triggerSuccessAlert(`Your resolution email was sent successfully to ${this.lastSentRecipient}.`);
+        this.triggerSuccessAlert(err?.error?.detail || 'The email could not be sent or the review status could not be updated.');
         this.cdr.markForCheck();
         this.cdr.detectChanges();
       }

@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ReviewService } from '../services/review';
 
 @Component({
   selector: 'app-review',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './review.html',
   styleUrls: ['./review.css']
 })
@@ -24,7 +25,19 @@ export class ReviewComponent implements OnInit {
     this.reviewService.getReviews().subscribe({
       next: (response: any) => {
         console.log(response);
-        this.reviews = response.data;
+        this.reviews = (response.data || []).map((review: any) => ({
+          ...review,
+          reviewerName: review.reviewer_name || 'Anonymous Customer',
+          reviewText: review.review_text || '',
+          summary: `Source: ${review.source || 'Unknown'} | Product: ${review.product || 'Unknown'} | Date: ${review.review_date || 'N/A'}`,
+          problem: review.problem_summary,
+          category: review.issue_type,
+          reason: review.cleaned_review,
+          solution: review.recommended_solution
+        }));
+        this.positiveCount = this.reviews.filter(review => review.sentiment === 'Positive').length;
+        this.negativeCount = this.reviews.filter(review => review.sentiment === 'Negative').length;
+        this.neutralCount = this.reviews.filter(review => review.sentiment === 'Neutral').length;
       },
 
       error: (error: any) => {
@@ -46,10 +59,11 @@ async sendEmail(review: any): Promise<void> {
       email: review.email || "dileepottikunta@gmail.com",
 
       // payload lo problem send chestunnam
-      payload: review.payload || review.problem || "",
+      payload: review.problem_summary || review.problem || review.review_text || "",
 
       // solution
-      solution: review.solution || ""
+      solution: review.recommended_solution || review.solution || "",
+      review_id: review.review_id
     };
 
     console.log("EMAIL PAYLOAD:", emailPayload);

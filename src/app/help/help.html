@@ -1,27 +1,57 @@
 <section class="page">
+
   <div class="page-head">
     <div>
-      <h1>Help</h1>
-      <p>Quick answers for Lumina Admin workspace tasks.</p>
+      <div class="help-badge">
+        ✨ AI ASSISTANT & KNOWLEDGE HUB
+      </div>
+      <h1>Help & Workspace Documentation</h1>
+      <p>Quick answers and component walkthroughs for Lumina Feedback Intelligence Admin.</p>
+    </div>
+  </div>
+
+  <!-- Animated Hero Section featuring animation.gif -->
+  <div class="anim-hero-card">
+    <div class="anim-hero-media">
+      <img src="/animation.gif" alt="AI Workspace Animation" class="anim-gif" />
+    </div>
+    <div class="anim-hero-text">
+      <h2>Automated AI Feedback Pipeline</h2>
+      <p>Learn how multi-model sentiment scoring, automated issue triage, and BigQuery data pipelines streamline consumer feedback resolution.</p>
+      <div class="quick-nav-btns">
+        <a routerLink="/" class="guide-btn">Explore Dashboard Analytics</a>
+        <a routerLink="/bulk-email" class="guide-btn outlined">Review Customer Feedback</a>
+      </div>
     </div>
   </div>
 
   <div class="help-grid">
     <article class="card">
-      <h2>Dashboard</h2>
-      <p>Track review volume, sentiment mix, visitor trends, and upcoming team activities from one workspace view.</p>
+      <div class="card-icon">📊</div>
+      <h2>Dashboard & Analytics</h2>
+      <p>Track total review volumes, positive/negative sentiment breakdown, multi-model evaluation metrics, and BigQuery issue classification graphs.</p>
+      <a routerLink="/" class="card-link">Go to Dashboard →</a>
     </article>
+
     <article class="card">
-      <h2>Write a Review</h2>
-      <p>Submit product name, category, rating, review text, and a timestamp through the newreview API.</p>
+      <div class="card-icon">✍️</div>
+      <h2>Write a Review Component</h2>
+      <p>Submit product name, category, rating, and review text payload to trigger real-time AI sentiment classification and backend ingestion.</p>
+      <a routerLink="/write-review" class="card-link">Write a Review →</a>
     </article>
+
     <article class="card">
-      <h2>Bulk Email</h2>
-      <p>Send a follow-up to multiple recipients using the existing send-email endpoint for each address.</p>
+      <div class="card-icon">💬</div>
+      <h2>Reviews & Action Center</h2>
+      <p>Filter neutral and negative customer feedback by product, rating, and severity. Inspect AI problem summaries and send resolution emails.</p>
+      <a routerLink="/bulk-email" class="card-link">View Reviews & Send Emails →</a>
     </article>
+
     <article class="card">
-      <h2>Need support?</h2>
-      <p>Contact the workspace admin or email support@lumina.admin for account and API help.</p>
+      <div class="card-icon">⚡</div>
+      <h2>Need Direct Support?</h2>
+      <p>Contact the workspace administrator or reach out to our engineering support team for API access, schema updates, or model setup.</p>
+      <a href="mailto:support@lumina.admin" class="card-link">Email Workspace Support →</a>
     </article>
   </div>
 </section>

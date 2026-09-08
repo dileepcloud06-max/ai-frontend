@@ -1,439 +1,183 @@
 <section class="page">
-  <!-- Page Header -->
-  <div class="page-head">
-    <div>
-      <div class="thesis-badge">
-        <span class="pulse-dot"></span> AI-Powered Feedback Intelligence Thesis
+
+  <!-- NAVIGATION HERO BANNER SECTION (Image 2 Inspired) -->
+  <div class="nav-hero-card">
+    <div class="nav-hero-content">
+      <div class="hero-pill-badge">
+        <svg class="badge-sparkle" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/>
+        </svg>
+        <span>AI-Powered Consumer Feedback Classification
+                       and Visualization Platform</span>
       </div>
-      <h1>Dashboard & Model Analytics</h1>
-      <p>Real-time consumer feedback classification, BigQuery sentiment aggregation & multi-model evaluation.</p>
+      <h1 class="welcome-heading">Welcome back, Urekha <span class="hand-wave">👋</span></h1>
+      <p class="hero-subtext">Real-time consumer feedback classification, sentiment intelligence and model evaluation.</p>
     </div>
-    <div class="period-select">
-      @for (item of periods; track item) {
-        <button type="button" [class.active]="period === item" (click)="setPeriod(item)">
-          {{ item }}
-        </button>
-      }
+
+    <div class="nav-hero-media">
+      <div class="isometric-3d-card">
+        <img src="/sales.gif" alt="AI Feedback Intelligence 3D Dashboard" class="hero-animated-gif" />
+      </div>
     </div>
   </div>
 
-  <!-- KPI Cards Row -->
-  <div class="stats" id="gl_kpi_cards">
-    <article class="stat-card lilac">
-      <div class="stat-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M4 19V5M4 19h16M8 16l3-4 3 2 4-6"/>
-        </svg>
-      </div>
-      <div class="stat-body">
-        <span>Total Reviews</span>
-        <strong>{{ totalReviews | number }}</strong>
-        <em class="up">+12.4% vs last period</em>
-      </div>
-    </article>
-
-    <article class="stat-card mint">
-      <div class="stat-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M7 12.5 10.2 16 17 8"/>
-          <circle cx="12" cy="12" r="9"/>
-        </svg>
-      </div>
-      <div class="stat-body">
-        <span>Positives</span>
-        <strong>{{ positives | number }}</strong>
-        <em class="up">{{ positivesPct }}% sentiment lift</em>
-      </div>
-    </article>
-
-    <article class="stat-card rose">
-      <div class="stat-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <circle cx="12" cy="12" r="9"/>
-          <path d="M8 12h8"/>
-        </svg>
-      </div>
-      <div class="stat-body">
-        <span>Negatives</span>
-        <strong>{{ negatives | number }}</strong>
-        <em class="down">{{ negativesPct }}% needs follow-up</em>
-      </div>
-    </article>
-
-    <article class="stat-card peach">
-      <div class="stat-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <circle cx="12" cy="12" r="9"/>
-          <path d="M8 13.5c1.2 1.2 6.8 1.2 8 0"/>
-          <circle cx="9" cy="10" r=".8" fill="currentColor"/>
-          <circle cx="15" cy="15" r=".8" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="stat-body">
-        <span>Neutral Event</span>
-        <strong>{{ neutrals | number }}</strong>
-        <em>{{ neutralsPct }}% stable this week</em>
-      </div>
-    </article>
-  </div>
-
-  <!-- Main Analytics Grid -->
-
-  <!-- 1. Product Insights Chart Card (#gl_product_insights) -->
-  <article class="card dark-chart-card" id="gl_product_insights">
-    <div class="card-head dark-head">
-      <div>
-        <h2>Sentiment Distribution by Product</h2>
-        <p>Positive, negative, and neutral reviews for each product.</p>
-      </div>
-
-      <div class="filter-controls">
-        <div class="search-box">
+  <!-- 6 INTERACTIVE NAVIGATION FEATURE CARDS (Image 2 Exact Layout) -->
+  <div class="nav-cards-grid">
+    
+    <!-- Card 1: Dashboard & Analytics -->
+    <article class="nav-feature-card card-blue" (click)="scrollToAnalytics()" title="Go to Dashboard Analytics">
+      <div class="card-top">
+        <div class="card-icon-box blue-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="7"/>
-            <path d="m21 21-4.3-4.3"/>
+            <path d="M4 19V5M4 19h16M8 16l3-4 3 2 4-6"/>
           </svg>
-          <input 
-            type="text" 
-            placeholder="Search product..." 
-            [(ngModel)]="productSearch" 
-          />
         </div>
-
-        <select class="custom-select" [(ngModel)]="productFilter">
-          <option value="top10">Top 10 Products (Default)</option>
-          <option value="top20">Top 20 Products</option>
-          <option value="all">All Products ({{ productInsights.length }})</option>
-          <optgroup label="Select Specific Product">
-            @for (p of productInsights; track p.product) {
-              <option [value]="'single:' + p.product">{{ p.product }}</option>
-            }
-          </optgroup>
-        </select>
+        <div class="card-text-content">
+          <h2>Dashboard & Analytics</h2>
+          <p>View real-time analytics, sentiment distribution and performance metrics.</p>
+        </div>
       </div>
-    </div>
-
-    <div class="chart-container-relative" (mouseleave)="onProductLeave()">
-      <!-- Tooltip Overlay -->
-      @if (hoveredProduct) {
-        <div 
-          class="dark-tooltip"
-          [style.left.px]="productTooltipPos.x"
-          [style.top.px]="productTooltipPos.y"
-        >
-          <div class="tooltip-title">{{ hoveredProduct.product }}</div>
-          <div class="tooltip-row">
-            <span class="dot-indicator pos"></span>
-            <span class="label">Positive reviews</span>
-            <span class="val">{{ hoveredProduct.positive_reviews }}</span>
-          </div>
-          <div class="tooltip-row">
-            <span class="dot-indicator neu"></span>
-            <span class="label">Neutral reviews</span>
-            <span class="val">{{ hoveredProduct.neutral_reviews }}</span>
-          </div>
-          <div class="tooltip-row">
-            <span class="dot-indicator neg"></span>
-            <span class="label">Negative reviews</span>
-            <span class="val">{{ hoveredProduct.negative_reviews }}</span>
-          </div>
-          @if (hoveredProduct.top_issue) {
-            <div class="tooltip-extra">
-              Top Issue: <strong>{{ hoveredProduct.top_issue }}</strong>
-            </div>
-          }
-          @if (hoveredProduct.high_priority_issues > 0) {
-            <div class="tooltip-extra warning">
-              High Priority Flag: <strong>{{ hoveredProduct.high_priority_issues }}</strong>
-            </div>
-          }
-        </div>
-      }
-
-      <div class="stacked-bar-list">
-        @for (item of filteredProducts; track item.product) {
-          <div 
-            class="bar-row"
-            (mousemove)="onProductHover($event, item)"
-          >
-            <div class="row-label" [title]="item.product">{{ item.product }}</div>
-            <div class="bar-track">
-              <div 
-                class="segment pos" 
-                [style.width.%]="getProductBarWidth(item.positive_reviews)"
-                title="Positive: {{ item.positive_reviews }}"
-              ></div>
-              <div 
-                class="segment neu" 
-                [style.width.%]="getProductBarWidth(item.neutral_reviews)"
-                title="Neutral: {{ item.neutral_reviews }}"
-              ></div>
-              <div 
-                class="segment neg" 
-                [style.width.%]="getProductBarWidth(item.negative_reviews)"
-                title="Negative: {{ item.negative_reviews }}"
-              ></div>
-            </div>
-            <div class="row-total">{{ item.total_reviews }}</div>
-          </div>
-        }
-        @if (filteredProducts.length === 0) {
-          <div class="no-data">No products found matching "{{ productSearch }}"</div>
-        }
+      <div class="card-action-bar">
+        <a class="action-btn blue-btn" (click)="$event.stopPropagation(); scrollToAnalytics()">
+          View Dashboard <span class="arrow">→</span>
+        </a>
       </div>
-
-      <!-- X-Axis Scale Baseline -->
-      <div class="x-axis-scale">
-        <span style="left: 0%">0</span>
-        <span style="left: 25%">45</span>
-        <span style="left: 50%">90</span>
-        <span style="left: 75%">135</span>
-        <span style="left: 100%">180</span>
-      </div>
-
-      <div class="chart-legend-bottom">
-        <span><i class="swatch pos"></i> Positive reviews</span>
-        <span><i class="swatch neu"></i> Neutral reviews</span>
-        <span><i class="swatch neg"></i> Negative reviews</span>
-      </div>
-    </div>
-  </article>
-
-  <!-- Grid Row for Model Performance & Issues Summary -->
-  <div class="two-col-grid">
-    <!-- 2. Model Performance Comparison (#gl_model_metrics) -->
-    <article class="card dark-chart-card" id="gl_model_metrics">
-      <div class="card-head dark-head">
-        <div>
-          <h2>Model Performance Comparison</h2>
-          <p>Comparison of accuracy, precision, recall, and F1 score across evaluated models.</p>
-        </div>
-        <div class="tech-tag">AI Pipeline</div>
-      </div>
-
-      <div class="chart-container-relative" (mouseleave)="onModelLeave()">
-        @if (hoveredModel) {
-          <div 
-            class="dark-tooltip"
-            [style.left.px]="modelTooltipPos.x"
-            [style.top.px]="modelTooltipPos.y"
-          >
-            <div class="tooltip-title">{{ hoveredModel.model_name }}</div>
-            <div class="tooltip-category">{{ hoveredModel.model_category }}</div>
-            @if (hoveredModel.accuracy !== null) {
-              <div class="tooltip-row">
-                <span class="dot-indicator acc"></span>
-                <span class="label">Accuracy</span>
-                <span class="val">{{ (hoveredModel.accuracy * 100).toFixed(0) }}%</span>
-              </div>
-              <div class="tooltip-row">
-                <span class="dot-indicator prec"></span>
-                <span class="label">Precision</span>
-                <span class="val">{{ (hoveredModel.precision! * 100).toFixed(0) }}%</span>
-              </div>
-              <div class="tooltip-row">
-                <span class="dot-indicator rec"></span>
-                <span class="label">Recall</span>
-                <span class="val">{{ (hoveredModel.recall! * 100).toFixed(0) }}%</span>
-              </div>
-              <div class="tooltip-row">
-                <span class="dot-indicator f1"></span>
-                <span class="label">F1 Score</span>
-                <span class="val">{{ (hoveredModel.f1_score! * 100).toFixed(0) }}%</span>
-              </div>
-              <div class="tooltip-extra">
-                Train: {{ hoveredModel.training_time?.toFixed(2) }}s | Inf: {{ hoveredModel.inference_time?.toFixed(2) }}s
-              </div>
-            } @else {
-              <div class="tooltip-extra warning">
-                Status: {{ hoveredModel.notes }}
-              </div>
-            }
-          </div>
-        }
-
-        <div class="model-bars-list">
-          @for (m of modelMetrics; track m.model_name) {
-            <div 
-              class="model-group"
-              (mousemove)="onModelHover($event, m)"
-            >
-              <div class="model-label-row">
-                <span class="model-title">{{ m.model_name }}</span>
-                <span class="category-badge">{{ m.model_category }}</span>
-              </div>
-
-              @if (m.accuracy !== null) {
-                <div class="metrics-lines">
-                  <div class="m-line acc" style="width: 100%" title="Accuracy 100%"></div>
-                  <div class="m-line prec" style="width: 100%" title="Precision 100%"></div>
-                  <div class="m-line rec" style="width: 100%" title="Recall 100%"></div>
-                  <div class="m-line f1" style="width: 100%" title="F1 Score 100%"></div>
-                </div>
-              } @else {
-                <div class="unavail-bar" [title]="m.notes">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <circle cx="12" cy="12" r="9"/>
-                    <path d="M12 8v4M12 16h.01"/>
-                  </svg>
-                  <span>{{ m.notes }}</span>
-                </div>
-              }
-            </div>
-          }
-        </div>
-
-        <div class="x-axis-scale">
-          <span style="left: 0%">0%</span>
-          <span style="left: 25%">25%</span>
-          <span style="left: 50%">50%</span>
-          <span style="left: 75%">75%</span>
-          <span style="left: 100%">100%</span>
-        </div>
-
-        <div class="chart-legend-bottom">
-          <span><i class="swatch acc"></i> Accuracy</span>
-          <span><i class="swatch prec"></i> Precision</span>
-          <span><i class="swatch rec"></i> Recall</span>
-          <span><i class="swatch f1"></i> F1 Score</span>
-        </div>
+      <div class="card-corner-shape blue-shape">
+        <svg viewBox="0 0 100 100" fill="currentColor"><path d="M0 100 C 30 60, 60 30, 100 0 L 100 100 Z"/></svg>
       </div>
     </article>
 
-    <!-- 3. Negative vs High-Priority Issues (#gl_issue_summary) -->
-    <article class="card dark-chart-card" id="gl_issue_summary">
-      <div class="card-head dark-head">
-        <div>
-          <h2>Negative vs High-Priority Issues</h2>
-          <p>Comparison of negative reviews and high-priority issues by category.</p>
+    <!-- Card 2: Write a Review -->
+    <article class="nav-feature-card card-green" (click)="navigateTo('/write-review')" title="Create a new review">
+      <div class="card-top">
+        <div class="card-icon-box green-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9"/>
+            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4 11.5-11.5Z"/>
+          </svg>
         </div>
-        <div class="tech-tag glow">BigQuery Gold</div>
+        <div class="card-text-content">
+          <h2>Write a Review</h2>
+          <p>Add new customer feedback and get AI-powered insights.</p>
+        </div>
       </div>
-
-      <div class="chart-container-relative" (mouseleave)="onIssueLeave()">
-        @if (hoveredIssue) {
-          <div 
-            class="dark-tooltip"
-            [style.left.px]="issueTooltipPos.x"
-            [style.top.px]="issueTooltipPos.y"
-          >
-            <div class="tooltip-title">{{ hoveredIssue.issue_type || 'Unclassified' }}</div>
-            <div class="tooltip-row">
-              <span class="dot-indicator neg"></span>
-              <span class="label">Negative reviews</span>
-              <span class="val">{{ hoveredIssue.negative_count }}</span>
-            </div>
-            <div class="tooltip-row">
-              <span class="dot-indicator high"></span>
-              <span class="label">High priority</span>
-              <span class="val">{{ hoveredIssue.high_priority_count }}</span>
-            </div>
-            <div class="tooltip-extra">
-              Total Category Reviews: <strong>{{ hoveredIssue.review_count }}</strong> ({{ hoveredIssue.percentage }}%)
-            </div>
-          </div>
-        }
-
-        <div class="issue-bars-list">
-          @for (item of issueSummary; track item.issue_type) {
-            <div 
-              class="issue-row"
-              (mousemove)="onIssueHover($event, item)"
-            >
-              <div class="row-label">{{ item.issue_type || 'null' }}</div>
-              <div class="issue-bars-wrapper">
-                <div class="bar-pair">
-                  <div 
-                    class="issue-bar neg" 
-                    [style.width.%]="getIssueBarWidth(item.negative_count)"
-                    title="Negative Reviews: {{ item.negative_count }}"
-                  ></div>
-                </div>
-                <div class="bar-pair">
-                  <div 
-                    class="issue-bar high" 
-                    [style.width.%]="getIssueBarWidth(item.high_priority_count)"
-                    title="High Priority: {{ item.high_priority_count }}"
-                  ></div>
-                </div>
-              </div>
-            </div>
-          }
-        </div>
-
-        <div class="x-axis-scale">
-          <span style="left: 0%">0</span>
-          <span style="left: 33%">150</span>
-          <span style="left: 66%">300</span>
-          <span style="left: 100%">450</span>
-        </div>
-
-        <div class="chart-legend-bottom">
-          <span><i class="swatch neg"></i> Negative reviews</span>
-          <span><i class="swatch high"></i> High priority</span>
-        </div>
+      <div class="card-action-bar">
+        <a routerLink="/write-review" class="action-btn green-btn" (click)="$event.stopPropagation()">
+          Create Review <span class="arrow">→</span>
+        </a>
+      </div>
+      <div class="card-corner-shape green-shape">
+        <svg viewBox="0 0 100 100" fill="currentColor"><path d="M0 100 C 30 60, 60 30, 100 0 L 100 100 Z"/></svg>
       </div>
     </article>
+
+    <!-- Card 3: Reviews -->
+    <article class="nav-feature-card card-purple" (click)="navigateTo('/bulk-email')" title="View all reviews">
+      <div class="card-top">
+        <div class="card-icon-box purple-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            <path d="M8 9h8M8 12h5"/>
+          </svg>
+        </div>
+        <div class="card-text-content">
+          <h2>Reviews</h2>
+          <p>Browse, search and manage all customer reviews.</p>
+        </div>
+      </div>
+      <div class="card-action-bar">
+        <a routerLink="/bulk-email" class="action-btn purple-btn" (click)="$event.stopPropagation()">
+          View Reviews <span class="arrow">→</span>
+        </a>
+      </div>
+      <div class="card-corner-shape purple-shape">
+        <svg viewBox="0 0 100 100" fill="currentColor"><path d="M0 100 C 30 60, 60 30, 100 0 L 100 100 Z"/></svg>
+      </div>
+    </article>
+
+    <!-- Card 4: AI Assistant -->
+    <article class="nav-feature-card card-amber" (click)="openChatbot()" title="Open AI Assistant Chatbot">
+      <div class="card-top">
+        <div class="card-icon-box yellow-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="10" rx="2"/>
+            <circle cx="12" cy="5" r="2"/>
+            <path d="M12 7v4M8 15h.01M16 15h.01"/>
+          </svg>
+        </div>
+        <div class="card-text-content">
+          <h2>AI Assistant</h2>
+          <p>Ask questions and get intelligent answers from your data.</p>
+        </div>
+      </div>
+      <div class="card-action-bar">
+        <a class="action-btn yellow-btn" (click)="$event.stopPropagation(); openChatbot()">
+          Open Assistant <span class="arrow">→</span>
+        </a>
+      </div>
+      <div class="card-corner-shape yellow-shape">
+        <svg viewBox="0 0 100 100" fill="currentColor"><path d="M0 100 C 30 60, 60 30, 100 0 L 100 100 Z"/></svg>
+      </div>
+    </article>
+
+    <!-- Card 5: Reports & Insights -->
+    <article class="nav-feature-card card-rose" (click)="scrollToAnalytics()" title="Explore reports and insights">
+      <div class="card-top">
+        <div class="card-icon-box pink-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
+            <path d="M22 12A10 10 0 0 0 12 2v10z"/>
+          </svg>
+        </div>
+        <div class="card-text-content">
+          <h2>Reports & Insights</h2>
+          <p>Explore detailed reports and model performance insights.</p>
+        </div>
+      </div>
+      <div class="card-action-bar">
+        <a class="action-btn pink-btn" (click)="$event.stopPropagation(); scrollToAnalytics()">
+          View Reports <span class="arrow">→</span>
+        </a>
+      </div>
+      <div class="card-corner-shape pink-shape">
+        <svg viewBox="0 0 100 100" fill="currentColor"><path d="M0 100 C 30 60, 60 30, 100 0 L 100 100 Z"/></svg>
+      </div>
+    </article>
+
+    <!-- Card 6: Help & Support -->
+    <article class="nav-feature-card card-cyan" (click)="navigateTo('/help')" title="Get help and documentation">
+      <div class="card-top">
+        <div class="card-icon-box cyan-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M9.5 9a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1.4.9-1.4 1.7"/>
+            <circle cx="12" cy="17" r=".8" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="card-text-content">
+          <h2>Help & Support</h2>
+          <p>Get help, documentation and support resources.</p>
+        </div>
+      </div>
+      <div class="card-action-bar">
+        <a routerLink="/help" class="action-btn cyan-btn" (click)="$event.stopPropagation()">
+          Get Help <span class="arrow">→</span>
+        </a>
+      </div>
+      <div class="card-corner-shape cyan-shape">
+        <svg viewBox="0 0 100 100" fill="currentColor"><path d="M0 100 C 30 60, 60 30, 100 0 L 100 100 Z"/></svg>
+      </div>
+    </article>
+
   </div>
 
-  <!-- Bottom Analytics Row: Visitor Statistics & Tasks Workflow -->
-  <div class="analytics-row">
-    <article class="card chart-card">
-      <div class="card-head">
-        <div>
-          <h2>Visitor Statistics</h2>
-          <p>Employee engagement & review velocity across {{ period.toLowerCase() }}</p>
-        </div>
-        <div class="legend">
-          <span><i class="dot current"></i> Last 6 Months</span>
-          <span><i class="dot previous"></i> Previous Period</span>
-        </div>
-      </div>
-
-      <div class="chart-wrap">
-        <svg viewBox="0 0 640 220" preserveAspectRatio="none" role="img" aria-label="Visitor statistics chart">
-          @for (y of [40, 90, 140, 190]; track y) {
-            <line x1="16" [attr.y1]="y" x2="624" [attr.y2]="y" stroke="#eef1f6" stroke-width="1"/>
-          }
-          <polygon [attr.points]="areaPoints(currentSeries)" fill="rgba(91,108,255,0.12)"/>
-          <polyline [attr.points]="linePoints(previousSeries)" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-          <polyline [attr.points]="linePoints(currentSeries)" fill="none" stroke="#5b6cff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <div class="x-axis">
-          @for (month of months; track month) {
-            <span>{{ month }}</span>
-          }
-        </div>
-      </div>
-    </article>
-
-    <article class="card tasks-card">
-      <div class="card-head">
-        <div>
-          <h2>Tasks Workflow Health</h2>
-          <p>AI Classification & Triage Pipeline</p>
-        </div>
-      </div>
-
-      <div class="progress-ring" aria-label="60 percent complete">
-        <svg viewBox="0 0 140 140">
-          <circle class="track" cx="70" cy="70" r="52"/>
-          <circle class="ended" cx="70" cy="70" r="52"/>
-          <circle class="active" cx="70" cy="70" r="52"/>
-        </svg>
-        <div class="progress-label">
-          <strong>60%</strong>
-          <span>Completed</span>
-        </div>
-      </div>
-
-      <div class="task-legend">
-        <div><i class="swatch green"></i> Active Ingestion</div>
-        <div><i class="swatch orange"></i> Triage Completed</div>
-        <div><i class="swatch gray"></i> Ended Cycle</div>
-      </div>
-    </article>
+  <!-- BOTTOM QUOTE BANNER (Image 2 Exact Quote Bar) -->
+  <div class="nav-quote-card">
+    <div class="quote-icon-box">“</div>
+    <p>Turning feedback into intelligence, driving better products and happier customers.</p>
+    <div class="quote-dots-pattern"></div>
   </div>
 
+  
 
 </section>

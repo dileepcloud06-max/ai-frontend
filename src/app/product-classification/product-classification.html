@@ -1,0 +1,218 @@
+<main class="classification-page">
+  @if (loading) {
+    <div class="loading-state">Loading product catalog...</div>
+  } @else if (errorMessage) {
+    <div class="error-state">{{ errorMessage }}</div>
+  } @else if (selectedProduct) {
+
+    <header class="page-header">
+      <div>
+        <span class="eyebrow">PRODUCT CLASSIFICATION (EXCEL DATASET)</span>
+        <h1>Product reviews <span class="status-dot"></span></h1>
+        <p>Real-time review sentiment classification, major issue detection, and customer feedback from Excel dataset.</p>
+      </div>
+
+      <div class="header-controls">
+        <label class="product-filter" *ngIf="categories.length > 1">
+          <span>CATEGORY</span>
+          <select
+            [value]="selectedCategory"
+            (change)="selectCategory($any($event.target).value)">
+            <option *ngFor="let cat of categories" [value]="cat">
+              {{ cat }}
+            </option>
+          </select>
+        </label>
+
+        <label class="product-filter">
+          <span>PRODUCT MODEL</span>
+          <select
+            [value]="selectedProduct ? products.indexOf(selectedProduct) : 0"
+            (change)="selectProductByIndex(+$any($event.target).value)">
+            <option *ngFor="let product of filteredProducts" [value]="products.indexOf(product)">
+              {{ product.name }} ({{ product.category }})
+            </option>
+          </select>
+        </label>
+        <div class="header-note"><span class="pulse"></span> {{ filteredProducts.length }} products</div>
+      </div>
+    </header>
+
+    <section class="hero-workspace" #analysisCard>
+      <aside class="product-rail">
+        <span class="rail-badge">SELECTED PRODUCT</span>
+
+        <div class="hero-product-art"
+             [ngClass]="[selectedProduct.accent, 'image-type-' + (products.indexOf(selectedProduct) % 3)]">
+          <img *ngIf="selectedProduct.image"
+               [src]="selectedProduct.image"
+               [alt]="selectedProduct.name"
+               crossorigin="anonymous">
+          <span *ngIf="!selectedProduct.image" class="visual-glyph">
+            {{ products.indexOf(selectedProduct) % 3 === 0 ? '▱' : products.indexOf(selectedProduct) % 3 === 1 ? '◉' : '✦' }}
+          </span>
+          <i></i>
+        </div>
+
+        <span class="category">{{ selectedProduct.category }}</span>
+        <h2>{{ selectedProduct.name }}</h2>
+
+        <div class="hero-rating">
+          <span class="stars">★★★★★</span>
+          {{ averageRating(selectedProduct) | number:'1.1-1' }}
+          <small>({{ selectedProduct.reviews.length }} reviews)</small>
+        </div>
+
+        <button class="rail-button">View product details <span>↗</span></button>
+      </aside>
+
+      <section class="detail-panel">
+        <div class="detail-header">
+          <div>
+            <span class="eyebrow">REVIEW SUMMARY</span>
+            <h2>How customers feel</h2>
+            <span class="detail-subtitle">
+              {{ selectedProduct.reviews.length }} reviews for {{ selectedProduct.name }}
+            </span>
+          </div>
+
+          <div class="header-actions">
+            <button class="download-button"
+                    type="button"
+                    (click)="downloadAnalysisCard()"
+                    title="Download complete analysis card">
+              ↓ <span>Download card</span>
+            </button>
+            <div class="selected-mark">✓</div>
+          </div>
+        </div>
+
+        <div class="quick-stats" *ngIf="!reviewsLoading">
+          <div><span>Positive</span><strong class="positive-text">{{ positiveCount }}</strong></div>
+          <div><span>Negative</span><strong class="negative-text">{{ negativeCount }}</strong></div>
+          <div><span>Neutral</span><strong class="neutral-text">{{ neutralCount }}</strong></div>
+          <div><span>Total</span><strong>{{ selectedProduct.reviews.length }}</strong></div>
+        </div>
+
+        <div class="charts-row">
+          <div class="chart-block">
+            <div class="donut sentiment-donut">
+              <svg viewBox="0 0 42 42" aria-label="Sentiment chart">
+                <circle class="chart-track" cx="21" cy="21" r="15.9"></circle>
+
+                <circle class="chart-green chart-segment"
+                        cx="21" cy="21" r="15.9" pathLength="100"
+                        [attr.stroke-dasharray]="chartSegment(positiveReviews, 100)"
+                        [attr.stroke-dashoffset]="chartOffset([positiveReviews, negativeReviews, neutralReviews], 0, 100)">
+                  <title>Positive: {{ positiveReviews | number:'1.0-1' }}%</title>
+                </circle>
+
+                <circle class="chart-red chart-segment"
+                        cx="21" cy="21" r="15.9" pathLength="100"
+                        [attr.stroke-dasharray]="chartSegment(negativeReviews, 100)"
+                        [attr.stroke-dashoffset]="chartOffset([positiveReviews, negativeReviews, neutralReviews], 1, 100)">
+                  <title>Negative: {{ negativeReviews | number:'1.0-1' }}%</title>
+                </circle>
+
+                <circle class="chart-yellow chart-segment"
+                        cx="21" cy="21" r="15.9" pathLength="100"
+                        [attr.stroke-dasharray]="chartSegment(neutralReviews, 100)"
+                        [attr.stroke-dashoffset]="chartOffset([positiveReviews, negativeReviews, neutralReviews], 2, 100)">
+                  <title>Neutral: {{ neutralReviews | number:'1.0-1' }}%</title>
+                </circle>
+              </svg>
+
+              <span>100<small>% MIX</small></span>
+            </div>
+
+            <h4>Sentiment</h4>
+            <ul class="legend sentiment-legend">
+              <li><i class="green"></i>Positive <b>{{ positiveReviews | number:'1.0-1' }}%</b></li>
+              <li><i class="red"></i>Negative <b>{{ negativeReviews | number:'1.0-1' }}%</b></li>
+              <li><i class="yellow"></i>Neutral <b>{{ neutralReviews | number:'1.0-1' }}%</b></li>
+            </ul>
+          </div>
+
+          <div class="chart-block issue-chart-block">
+            @if (reviewsLoading) {
+              <div class="reviews-loading">Loading issue analysis...</div>
+            } @else if (selectedProduct.issues.length) {
+              <div class="donut issue-donut">
+                <svg viewBox="0 0 42 42" aria-label="Issue type chart">
+                  <circle class="chart-track" cx="21" cy="21" r="15.9"></circle>
+                  <circle
+                    *ngFor="let issue of selectedProduct.issues; let i = index"
+                    [class]="'chart-segment issue-chart-' + i"
+                    cx="21" cy="21" r="15.9" pathLength="100"
+                    [attr.stroke-dasharray]="chartSegment(issue.count, issueTotal)"
+                    [attr.stroke-dashoffset]="chartOffset(selectedProduct.issues.map(item => item.count), i, issueTotal)">
+                    <title>{{ issue.name }}: {{ issue.count }}</title>
+                  </circle>
+                </svg>
+                <span>{{ issueTotal }}<small>ISSUES</small></span>
+              </div>
+
+              <h4>Main issues</h4>
+              <ul class="legend issue-legend">
+                <li *ngFor="let issue of selectedProduct.issues; let i = index">
+                  <i [class]="'issue-' + i"></i>
+                  <span class="issue-name">{{ issue.name }}</span>
+                  <b>{{ issue.count }} ({{ issue.percentage | number:'1.0-0' }}%)</b>
+                </li>
+              </ul>
+            } @else {
+              <div class="no-issues">
+                <strong>No major issues</strong>
+                <span>No issue types were reported for this product.</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="reviews-heading">
+          <div>
+            <span class="eyebrow">CUSTOMER VOICE</span>
+            <h3>{{ showAllReviews ? 'All reviews' : 'What people are saying' }}</h3>
+          </div>
+          <span class="review-count">{{ visibleReviews.length }} / {{ selectedProduct.reviews.length }}</span>
+        </div>
+
+        <div class="review-list" [class.expanded]="showAllReviews">
+          @if (reviewsLoading) {
+            <div class="reviews-loading full-row">Loading product reviews...</div>
+          } @else if (!selectedProduct.reviews.length) {
+            <div class="reviews-loading full-row">
+              No reviews returned for <strong>{{ selectedProduct.name }}</strong>.
+            </div>
+          } @else {
+            <div class="review-item" *ngFor="let review of visibleReviews">
+              <div class="review-avatar">{{ review.author.charAt(0) | uppercase }}</div>
+              <div class="review-copy">
+                <div class="review-meta">
+                  <strong>{{ review.author }}</strong>
+                  <span class="review-rating">
+                    {{ '★'.repeat(review.rating) }}<em>{{ '★'.repeat(5 - review.rating) }}</em>
+                  </span>
+                  <span class="sentiment-pill" [ngClass]="review.sentiment.toLowerCase()">
+                    {{ review.sentiment }}
+                  </span>
+                </div>
+                <p>{{ review.text }}</p>
+                <span class="issue-chip" *ngIf="review.issueType && review.issueType !== 'No Issue'">
+                  {{ review.issueType }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (selectedProduct.reviews.length > 3) {
+          <button class="view-all" (click)="toggleReviews()">
+            {{ showAllReviews ? 'Show 3 reviews' : 'View all ' + selectedProduct.reviews.length + ' reviews' }}
+            <span>{{ showAllReviews ? '↑' : '↓' }}</span>
+          </button>
+        }
+      </section>
+    </section>
+  }
+</main>

@@ -1,0 +1,40 @@
+<main class="login-page">
+	<section class="login-shell" aria-label="Sign in">
+		<div class="login-copy">
+			<div class="brand-mark" aria-hidden="true">✦</div>
+			<p class="kicker">FEEDBACK INTELLIGENCE</p>
+			<h1>Turn every review into a better decision.</h1>
+			<p class="intro">Your workspace for customer sentiment, product insights, and smarter conversations.</p>
+		</div>
+
+		<div class="login-form-panel">
+			<div class="form-heading">
+				<p class="kicker">WELCOME BACK</p>
+				<h2>Sign in to your account</h2>
+				<p>Enter your workspace credentials to continue.</p>
+			</div>
+
+			<form (ngSubmit)="submit()" #loginForm="ngForm">
+				<label for="username">Username</label>
+				<input id="username" name="username" type="text" [(ngModel)]="username" placeholder="Enter your username" autocomplete="username" required />
+
+				<div class="password-label">
+					<label for="password">Password</label>
+					<span>Secure access</span>
+				</div>
+				<input id="password" name="password" type="password" [(ngModel)]="password" placeholder="Enter your password" autocomplete="current-password" required />
+
+				@if (errorMessage) {
+					<p class="error-message" role="alert">{{ errorMessage }}</p>
+				}
+
+				<button type="submit" [disabled]="loginForm.invalid || isSubmitting">
+					{{ isSubmitting ? 'Signing in...' : 'Sign in' }}
+					<span aria-hidden="true">→</span>
+				</button>
+			</form>
+
+			<p class="login-note">Protected workspace access</p>
+		</div>
+	</section>
+</main>

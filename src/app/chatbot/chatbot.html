@@ -30,7 +30,7 @@
             </svg>
           </div>
           <div>
-            <h3>AI Feedback Intelligence</h3>
+            <h3 style="color: black;">AI Feedback Intelligence</h3>
             <span class="status-subtitle">Powered by Gemini & BigQuery</span>
           </div>
         </div>
@@ -57,6 +57,28 @@
               }
               @if (msg.text) {
                 <p>{{ msg.text }}</p>
+              }
+              @for (recommendation of (msg.recommendations || (msg.recommendation ? [msg.recommendation] : [])); track recommendation.product) {
+                <article class="recommendation-card" [class.do-not-buy]="recommendation.recommendation === &quot;DON'T BUY&quot;">
+                  <div class="recommendation-images">
+                    @for (image of (recommendation.images || []).slice(0, 3); track image) {
+                      <img [src]="image" [alt]="recommendation.product" loading="lazy" />
+                    }
+                  </div>
+                  <div class="recommendation-details">
+                    <strong>{{ recommendation.product }}</strong>
+                    <span>{{ recommendation.brand }} · {{ recommendation.category }}</span>
+                    @if (recommendation.price_inr) {
+                      <span>Price: ₹{{ recommendation.price_inr }}</span>
+                    }
+                    <b>{{ recommendation.recommendation }}</b>
+                    @if (recommendation.recommendation !== "DON'T BUY" && recommendation.buy_link) {
+                      <a [href]="recommendation.buy_link" target="_blank" rel="noopener noreferrer">View product / buy ↗</a>
+                    } @else {
+                      <small class="avoid-note">Don't recommend: review the negative issues before buying.</small>
+                    }
+                  </div>
+                </article>
               }
               <span class="msg-time">{{ msg.timestamp }}</span>
             </div>

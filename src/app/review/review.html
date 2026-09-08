@@ -1,4 +1,45 @@
 <div class="review-page">
+  <!-- Cross-Component Quick Switcher Navigation Hub -->
+  <div class="comp-switcher">
+    <div class="comp-switcher-label">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+      </svg>
+      Move to Component:
+    </div>
+    <div class="comp-switcher-links">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="comp-switcher-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="9" rx="2"/>
+          <rect x="14" y="3" width="7" height="5" rx="2"/>
+          <rect x="14" y="12" width="7" height="9" rx="2"/>
+          <rect x="3" y="16" width="7" height="5" rx="2"/>
+        </svg>
+        📊 Dashboard
+      </a>
+      <a routerLink="/bulk-email" routerLinkActive="active" class="comp-switcher-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        💬 Customer Reviews & Triage
+      </a>
+      <a routerLink="/write-review" routerLinkActive="active" class="comp-switcher-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 20h9"/>
+          <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4 11.5-11.5Z"/>
+        </svg>
+        ✍️ Write a Review
+      </a>
+      <a routerLink="/help" routerLinkActive="active" class="comp-switcher-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M9.5 9a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1.4.9-1.4 1.7"/>
+          <circle cx="12" cy="17" r=".8" fill="currentColor"/>
+        </svg>
+        ❓ Help & Guide
+      </a>
+    </div>
+  </div>
 
   <!-- Header -->
   <div class="page-header">
@@ -99,9 +140,7 @@
           <div>
             <h3>{{ review.reviewerName }}</h3>
 
-            <span class="summary">
-              {{ review.summary }}
-            </span>
+            <span class="summary">{{ review.summary }}</span>
           </div>
 
         </div>

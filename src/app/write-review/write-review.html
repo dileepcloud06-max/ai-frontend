@@ -1,13 +1,16 @@
 <section class="page">
+
   <div class="page-head">
     <div>
       <h1>Write a Review</h1>
-      <p>Share product feedback with rating, category, and a detailed review.</p>
+      <p>Share product feedback with rating, category, source, and a detailed review.</p>
     </div>
   </div>
 
   <article class="card form-card">
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      
+      <!-- Row 1: Product Name & Category -->
       <div class="form-grid">
         <label>
           <span>Product name</span>
@@ -31,18 +34,56 @@
         </label>
       </div>
 
-      <div class="rating-field">
-        <span>Rating</span>
-        <div class="stars">
-          @for (star of [1, 2, 3, 4, 5]; track star) {
-            <button type="button" [class.active]="(form.value.rating || 0) >= star" (click)="setRating(star)">
-              ★
-            </button>
-          }
+      <!-- Row 2: Rating & Escalation -->
+      <div class="form-grid">
+        <div class="rating-field">
+          <span>Rating</span>
+          <div class="stars">
+            @for (star of [1, 2, 3, 4, 5]; track star) {
+              <button type="button" [class.active]="(form.value.rating || 0) >= star" (click)="setRating(star)">
+                ★
+              </button>
+            }
+          </div>
+          <em>{{ form.value.rating }}/5</em>
         </div>
-        <em>{{ form.value.rating }}/5</em>
+
+        <label class="checkbox-field">
+          <span>Escalation</span>
+          <span class="checkbox-control">
+            <input type="checkbox" formControlName="escalation" />
+            <span>Escalate This Review</span>
+          </span>
+        </label>
       </div>
 
+      <!-- Row 3: Source & Custom Source -->
+      <div class="form-grid">
+        <label>
+          <span>Source</span>
+          <select formControlName="source">
+            <option value="" disabled>Select a source</option>
+            @for (src of sources; track src) {
+              <option [value]="src">{{ src }}</option>
+            }
+          </select>
+          @if (form.controls.source.touched && form.controls.source.invalid) {
+            <small>Choose a review source.</small>
+          }
+        </label>
+
+        @if (form.value.source === 'Custom') {
+          <label>
+            <span>Custom source</span>
+            <input type="text" formControlName="customSource" placeholder="e.g. eBay, Walmart, Direct Store" />
+            @if (form.controls.customSource.touched && form.controls.customSource.invalid) {
+              <small>Enter custom source name.</small>
+            }
+          </label>
+        }
+      </div>
+
+      <!-- Row 4: Review Textarea -->
       <label class="full">
         <span>Review</span>
         <textarea formControlName="review" rows="6" placeholder="Describe the product experience, quality, and anything the team should know."></textarea>
@@ -50,6 +91,32 @@
           <small>Write at least 10 characters.</small>
         }
       </label>
+
+      <!-- Row 5: Upload Image Dropzone -->
+      <div class="upload-section">
+        <span>Upload Product Image</span>
+        <div class="upload-box" [class.has-file]="!!uploadedBase64Url">
+          @if (!uploadedBase64Url) {
+            <label class="upload-dropzone">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <span>Click or drag image to upload</span>
+              <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
+            </label>
+          } @else {
+            <div class="preview-container">
+              <img [src]="uploadedBase64Url" alt="Uploaded product image" class="image-preview" />
+              <div class="preview-info">
+                <span class="file-name">{{ selectedFileName }}</span>
+                <button type="button" class="remove-btn" (click)="removeFile()">Remove Image</button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
 
       @if (successMessage) {
         <div class="alert success">{{ successMessage }}</div>

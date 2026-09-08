@@ -1,152 +1,84 @@
-<div class="shell" [class.collapsed]="collapsed" [class.mobile-open]="mobileOpen">
-  @if (mobileOpen) {
-    <div class="sidebar-backdrop" (click)="closeMobile()"></div>
-  }
-
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <div class="logo-mark" aria-hidden="true">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path d="M12 3L20 7.5V16.5L12 21L4 16.5V7.5L12 3Z" stroke="currentColor" stroke-width="1.8"/>
-          <circle cx="12" cy="12" r="3" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="brand-text">
-        <strong>Rekha Choudary</strong>
-        <span>Admin</span>
-      </div>
-    </div>
-
-    <nav class="sidebar-nav">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobile()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <rect x="3" y="3" width="7" height="9" rx="2"/>
-          <rect x="14" y="3" width="7" height="5" rx="2"/>
-          <rect x="14" y="12" width="7" height="9" rx="2"/>
-          <rect x="3" y="16" width="7" height="5" rx="2"/>
-        </svg>
-        <span>Dashboard</span>
-      </a>
-
-      <a routerLink="/write-review" routerLinkActive="active" (click)="closeMobile()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M12 20h9"/>
-          <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4 11.5-11.5Z"/>
-        </svg>
-        <span>Write a Review</span>
-      </a>
-
-      <!-- <a routerLink="/bulk-email" routerLinkActive="active" (click)="closeMobile()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <rect x="3" y="5" width="18" height="14" rx="2"/>
-          <path d="m3 7 9 7 9-7"/>
-        </svg>
-        <span>Send Bulk Email</span>
-      </a> -->
-      <a routerLink="/bulk-email" routerLinkActive="active" (click)="closeMobile()">
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.8"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  >
-    <!-- Review / Comment bubble -->
-    <path d="M4 4.5h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-9l-5 3v-3.5a2 2 0 0 1-2-2v-8.5a2 2 0 0 1 2-2z"/>
-
-    <!-- Review text -->
-    <path d="M8 9h8"/>
-    <path d="M8 12h5"/>
-
-    <!-- Star rating -->
-    <path d="m17.5 12.8.65 1.32 1.45.21-1.05 1.02.25 1.44-1.3-.68-1.3.68.25-1.44-1.05-1.02 1.45-.21z"/>
-  </svg>
-
-  <span>Reviews</span>
-</a>
-
-      <a routerLink="/help" routerLinkActive="active" (click)="closeMobile()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <circle cx="12" cy="12" r="9"/>
-          <path d="M9.5 9a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1.4.9-1.4 1.7"/>
-          <circle cx="12" cy="17" r=".8" fill="currentColor"/>
-        </svg>
-        <span>Help</span>
-      </a>
-    </nav>
-
-    <button class="collapse-btn" type="button" (click)="toggleSidebar()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <path d="M15 6 9 12l6 6"/>
-      </svg>
-      <span>Collapse</span>
-    </button>
-  </aside>
-
-  <div class="shell-main">
-    <header class="topbar">
-      <div class="topbar-left">
-        <button class="icon-btn menu-btn" type="button" (click)="toggleSidebar()" aria-label="Toggle sidebar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M4 7h16M4 12h16M4 17h16"/>
-          </svg>
-        </button>
-
-        <div class="topbar-brand">
-          <div class="logo-mark small">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M12 3L20 7.5V16.5L12 21L4 16.5V7.5L12 3Z" stroke="currentColor" stroke-width="1.8"/>
-              <circle cx="12" cy="12" r="3" fill="currentColor"/>
+<div class="app-layout">
+  <header class="topbar">
+    <div class="topbar-left">
+      <a routerLink="/" class="brand-logo">
+        @if (auth.user()?.role === 'amazon') {
+          <img class="brand-logo-image" src="/Aws.jpg" alt="AWS" />
+        } @else {
+          <div class="logo-sparkle-box">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/>
             </svg>
           </div>
-          <span>Lumina</span>
-        </div>
+        }
+        <span class="brand-name"></span>
+      </a>
+    </div>
+
+    <div class="topbar-right">
+      <nav class="topbar-nav">
+        @if (auth.user()?.role === 'dashboard') {
+          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ language.translate('home') }}</a>
+          <a routerLink="/analytics" routerLinkActive="active">{{ language.translate('analytics') }}</a>
+          <a routerLink="/product-classification" routerLinkActive="active">{{ language.translate('productClassification') }}</a>
+          <a routerLink="/bulk-email" routerLinkActive="active">{{ language.translate('reviews') }}</a>
+          <a routerLink="/write-review" routerLinkActive="active">{{ language.translate('writeReview') }}</a>
+          <a routerLink="/crm" routerLinkActive="active">{{ language.translate('crm') }}</a>
+          
+        }
+      </nav>
+
+      <button class="icon-btn notify" type="button" [attr.aria-label]="language.translate('notifications')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M6 9a6 6 0 1 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9"/>
+          <path d="M10 20a2 2 0 0 0 4 0"/>
+        </svg>
+        <span class="notification-count" [attr.aria-label]="alertCount + ' notifications'">{{ alertCount }}</span>
+      </button>
+
+      <div class="language-menu" [class.open]="languageMenuOpen">
+        <button class="language-btn" type="button" (click)="toggleLanguageMenu()" [attr.aria-label]="language.translate('language')">
+          <span class="language-icon">文A</span>
+          <span>{{ language.labelFor(language.current()) }}</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+        </button>
+        @if (languageMenuOpen) {
+          <div class="dropdown language-dropdown">
+            @for (option of language.languages; track option.code) {
+              <button type="button" [class.selected]="language.current() === option.code" (click)="setLanguage(option.code)">{{ option.label }}</button>
+            }
+          </div>
+        }
       </div>
 
-      <label class="search-bar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <circle cx="11" cy="11" r="7"/>
-          <path d="m20 20-3.5-3.5"/>
-        </svg>
-        <input type="search" placeholder="Search reviews, people, or reports" />
-      </label>
-
-      <div class="topbar-right">
-        <button class="icon-btn notify" type="button" aria-label="Notifications">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M6 9a6 6 0 1 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9"/>
-            <path d="M10 20a2 2 0 0 0 4 0"/>
+      <div class="user-menu" [class.open]="userMenuOpen">
+        <button class="user-btn" type="button" (click)="toggleUserMenu()">
+          <img class="avatar" src="https://media.licdn.com/dms/image/v2/D4E35AQHvRTQKNVBQ8w/profile-framedphoto-shrink_800_800/B4EZ9f1S_GK4AY-/0/1784019235554?e=1788681600&v=beta&t=mqPauRusGFUEPwJhnc6Or1CIJAEbbjgZtNM29wZ031c" alt="Urekha" />
+          <div class="user-meta">
+            <strong>Urekha</strong>
+            <span>{{ language.translate('admin') }}</span>
+          </div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="m6 9 6 6 6-6"/>
           </svg>
-          <span class="dot"></span>
         </button>
 
-        <div class="user-menu" [class.open]="userMenuOpen">
-          <button class="user-btn" type="button" (click)="toggleUserMenu()">
-            <img class="avatar" src="https://media.licdn.com/dms/image/v2/D4E35AQHvRTQKNVBQ8w/profile-framedphoto-shrink_800_800/B4EZ9f1S_GK4AY-/0/1784019235554?e=1788681600&v=beta&t=mqPauRusGFUEPwJhnc6Or1CIJAEbbjgZtNM29wZ031c" alt="Ava Morgan" />
-            <div class="user-meta">
-              <strong>Urekha</strong>
-              <span>Workspace Admin</span>
-            </div>
-            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="m6 9 6 6 6-6"/>
-            </svg>
-          </button>
-
-          @if (userMenuOpen) {
-            <div class="dropdown">
-              <button type="button">Profile</button>
-              <button type="button">Preferences</button>
-              <button type="button">Sign out</button>
-            </div>
-          }
-        </div>
+        @if (userMenuOpen) {
+          <div class="dropdown">
+            <button type="button">{{ language.translate('profile') }}</button>
+            <button type="button">{{ language.translate('preferences') }}</button>
+            <button type="button" (click)="signOut()">{{ language.translate('signOut') }}</button>
+          </div>
+        }
       </div>
-    </header>
+    </div>
+  </header>
 
-    <main class="content" (click)="closeUserMenu()">
-      <router-outlet />
-    </main>
-  </div>
+  <main class="main-container" (click)="closeUserMenu()">
+    <router-outlet />
+  </main>
+
   <app-chatbot />
 </div>

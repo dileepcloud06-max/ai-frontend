@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject, PLATFORM_ID, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReviewService } from '../services/review';
@@ -9,6 +9,22 @@ export interface ChatMessage {
   text: string;
   image?: string | null;
   timestamp: string;
+  recommendation?: ProductRecommendation | null;
+  recommendations?: ProductRecommendation[];
+}
+
+export interface ProductRecommendation {
+  product: string;
+  brand?: string;
+  category?: string;
+  price_inr?: string;
+  recommendation: string;
+  average_rating?: string;
+  negative_percentage?: string;
+  high_issue_percentage?: string;
+  best_for?: string;
+  buy_link?: string;
+  images?: string[];
 }
 
 @Component({
@@ -18,7 +34,7 @@ export interface ChatMessage {
   templateUrl: './chatbot.html',
   styleUrls: ['./chatbot.css']
 })
-export class ChatbotComponent {
+export class ChatbotComponent implements OnInit {
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
   @ViewChild('fileInput') private fileInput!: ElementRef;
 
@@ -40,6 +56,15 @@ export class ChatbotComponent {
   private reviewService = inject(ReviewService);
   private platformId = inject(PLATFORM_ID);
   private cdr = inject(ChangeDetectorRef);
+
+  ngOnInit(): void {
+    this.reviewService.chatbotOpen$.subscribe(() => {
+      this.isOpen = true;
+      this.cdr.markForCheck();
+      this.cdr.detectChanges();
+      setTimeout(() => this.scrollToBottom(), 100);
+    });
+  }
 
   toggleChat(): void {
     this.isOpen = !this.isOpen;
@@ -121,6 +146,8 @@ export class ChatbotComponent {
           id: (Date.now() + 1).toString(),
           sender: 'ai',
           text: aiReply,
+          recommendation: res?.recommendation || null,
+          recommendations: res?.recommendations || (res?.recommendation ? [res.recommendation] : []),
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
         this.cdr.markForCheck();
@@ -133,13 +160,13 @@ export class ChatbotComponent {
 
         let fallbackReply = "I have processed your query against BigQuery sentiment models.";
         if (text.toLowerCase().includes('defect') || text.toLowerCase().includes('issue')) {
-          fallbackReply = "Our Gemini AI model classified 1,828 Product Defects in BigQuery. 154 items were flagged as High Priority.";
+          fallbackReply = "I can help identify product issues from the available feedback.";
         } else if (text.toLowerCase().includes('dyson')) {
           fallbackReply = "Dyson V8 Staubsauger: 146 reviews (78 positive, 39 negative). Primary defect reported is dust latch release stiffness.";
         } else if (image) {
           fallbackReply = "Attached image received and processed via multi-modal vision intelligence model.";
         } else {
-          fallbackReply = `AI Assistant: Analyzed query '${text}'. 10,002 customer feedback records in BigQuery are up to date.`;
+          fallbackReply = `AI Assistant: Analyzed query '${text}'.`;
         }
 
         this.messages.push({

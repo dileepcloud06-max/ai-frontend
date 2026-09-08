@@ -1,6 +1,7 @@
-import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ReviewService } from '../services/review';
 
 export interface KpiItem {
@@ -43,11 +44,11 @@ export interface ProductInsightItem {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent {
   period = 'Last 6 Months';
   periods = ['Today', 'Last 7 Days', 'Last 30 Days', 'Last 6 Months'];
 
@@ -273,70 +274,18 @@ export class DashboardComponent implements OnInit {
   hoveredIssue: IssueItem | null = null;
   issueTooltipPos = { x: 0, y: 0 };
 
-  private platformId = inject(PLATFORM_ID);
+  constructor(private reviewService: ReviewService, public router: Router) {}
 
-  constructor(private reviewService: ReviewService) {}
+  navigateTo(path: string): void {
+    this.router.navigate([path]);
+  }
 
-  ngOnInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
+  openChatbot(): void {
+    this.reviewService.openChatbot();
+  }
 
-    // 1. KPI Cards fetch
-    this.reviewService.getKpiCards().subscribe({
-      next: (res: any) => {
-        if (res?.status === 'success' && Array.isArray(res?.data) && res.data.length) {
-          const data: KpiItem[] = res.data;
-          let total = 0;
-          data.forEach(item => {
-            total += item.review_count;
-            if (item.sentiment === 'Positive') {
-              this.positives = item.review_count;
-              this.positivesPct = item.percentage;
-            } else if (item.sentiment === 'Neutral') {
-              this.neutrals = item.review_count;
-              this.neutralsPct = item.percentage;
-            } else if (item.sentiment === 'Negative') {
-              this.negatives = item.review_count;
-              this.negativesPct = item.percentage;
-            }
-          });
-          if (total > 0) this.totalReviews = total;
-        }
-      },
-      error: () => {}
-    });
-
-    // 2. Issue Summary fetch
-    this.reviewService.getIssueSummary().subscribe({
-      next: (res: any) => {
-        if (res?.status === 'success' && Array.isArray(res?.data) && res.data.length) {
-          this.issueSummary = res.data.map((item: any) => ({
-            ...item,
-            issue_type: item.issue_type === null ? 'Unclassified' : item.issue_type
-          }));
-        }
-      },
-      error: () => {}
-    });
-
-    // 3. Model Metrics fetch
-    this.reviewService.getModelMetrics().subscribe({
-      next: (res: any) => {
-        if (res?.status === 'success' && Array.isArray(res?.data) && res.data.length) {
-          this.modelMetrics = res.data;
-        }
-      },
-      error: () => {}
-    });
-
-    // 4. Product Insights fetch
-    this.reviewService.getProductInsights().subscribe({
-      next: (res: any) => {
-        if (res?.status === 'success' && Array.isArray(res?.data) && res.data.length) {
-          this.productInsights = res.data;
-        }
-      },
-      error: () => {}
-    });
+  scrollToAnalytics(): void {
+    this.router.navigate(['/analytics']);
   }
 
   setPeriod(value: string): void {

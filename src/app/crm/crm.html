@@ -1,0 +1,31 @@
+<section class="crm-shell">
+  <section class="crm-content">
+    <header class="crm-header">
+      <div><span class="eyebrow">CUSTOMER | CLIENT RELATION MANAGEMENT / INBOX</span><p>Review, investigate and resolve customer feedback.</p></div>
+    </header>
+    <div *ngIf="apiError" class="crm-api-error" role="alert">{{ apiError }}</div>
+    <div class="metric-grid">
+      <article class="metric-card"><div class="metric-icon"><img src="https://cdn-icons-gif.flaticon.com/19009/19009714.gif" alt="Total reviews"></div><div><small>Total</small><strong>{{ summary.total_count }}</strong><span>Emailed reviews</span></div></article>
+      <article class="metric-card"><div class="metric-icon"><img src="https://assets-v2.lottiefiles.com/a/606e0492-1176-11ee-bc87-cb8832f2a8e9/d5kdJW9Ca7.gif" alt="Reviews under investigation"></div><div><small>Investigation</small><strong>{{ summary.investigation_count }}</strong><span>Under review</span></div></article>
+      <article class="metric-card warning"><div class="metric-icon warning"><img src="https://cdn-icons-gif.flaticon.com/16767/16767224.gif" alt="Escalated reviews"></div><div><small>Escalation</small><strong>{{ summary.escalation_count }}</strong><span>Need attention</span></div></article>
+      <article class="metric-card success"><div class="metric-icon success"><img src="https://cdn-icons-gif.flaticon.com/11188/11188709.gif" alt="Closed reviews"></div><div><small>Closed</small><strong>{{ summary.closed_count }}</strong><span>Resolved</span></div></article>
+    </div>
+    <section class="ticket-table-card">
+      <div class="table-title"><div><span class="eyebrow">INBOX / FEEDBACK TRIAGE</span></div><div class="table-tools"><label class="ticket-search"><span aria-hidden="true">⌕</span><input #ticketSearch type="search" [value]="searchTerm" placeholder="Search reviews, products or reviewer" aria-label="Search reviews, products or reviewer" (input)="updateSearch(ticketSearch.value)"><button *ngIf="searchTerm" type="button" aria-label="Clear search" (click)="updateSearch(''); ticketSearch.value = ''">×</button></label><span class="result-count">{{ filteredTickets.length }} results</span></div></div>
+      <div class="ticket-list">
+        <div class="ticket-list-head"><span>Review ID</span><span>Product name</span><span>Category</span><span>Review</span><span>Reviewer / Source</span><span>Action</span></div>
+        <article class="ticket-row" *ngFor="let ticket of visibleTickets">
+          <div class="ticket-id">{{ ticket.id }}<small>Needs review</small></div>
+          <div class="product-name">{{ ticket.product }}<div class="usage-bar"><span [style.width.%]="ticket.review * 20"></span></div></div>
+          <div class="ticket-category"><span class="category-dot"></span>{{ ticket.category }}</div>
+          <div><span class="stars">{{ '★'.repeat(ticket.review) }}<em>{{ '★'.repeat(5 - ticket.review) }}</em></span><small class="review-preview">{{ ticket.reviewText }}</small></div>
+          <div class="ticket-email">{{ ticket.email }}</div>
+          <div class="row-actions"><button class="investigate" type="button">Investigation</button><button class="close-ticket" type="button" (click)="closeTicket(ticket)">Close</button></div>
+        </article>
+        <div *ngIf="loading" class="empty-state">Loading reviews...</div>
+        <div *ngIf="!loading && !visibleTickets.length" class="empty-state">No investigation reviews found.</div>
+      </div>
+      <footer class="table-footer"><span>Showing {{ visibleTickets.length ? (currentPage - 1) * pageSize + 1 : 0 }} to {{ (currentPage - 1) * pageSize + visibleTickets.length }} of {{ filteredTickets.length }} entries</span><div class="pagination"><button (click)="setPage(currentPage - 1)" [disabled]="currentPage === 1">‹</button><button *ngFor="let page of [].constructor(pageCount); let i = index" [class.current]="currentPage === i + 1" (click)="setPage(i + 1)">{{ i + 1 }}</button><button (click)="setPage(currentPage + 1)" [disabled]="currentPage === pageCount">›</button></div></footer>
+    </section>
+  </section>
+</section>
