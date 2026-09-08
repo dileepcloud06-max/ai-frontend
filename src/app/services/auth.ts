@@ -14,8 +14,8 @@ export class AuthService {
 
   login(username: string, password: string): boolean {
     const credentials: Record<string, { password: string; role: UserRole }> = {
-      dileep: { password: '12345678', role: 'dashboard' },
-      dileepamz: { password: '12345678', role: 'amazon' }
+      rekha: { password: '12345678', role: 'dashboard' },
+      rekhaamz: { password: '12345678', role: 'amazon' }
     };
     const account = credentials[username.trim().toLowerCase()];
 
