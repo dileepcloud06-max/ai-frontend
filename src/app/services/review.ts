@@ -20,22 +20,22 @@ export interface NewReviewPayload {
 })
 export class ReviewService {
 
-  private apiUrl = 'http://127.0.0.1:8000/data';
-  private dataUrl = 'http://127.0.0.1:8000/data';
-  private newReviewUrl = 'http://127.0.0.1:8000/newreview';
-  private sendEmailUrl = 'http://127.0.0.1:8000/send-email';
-  private chatbotUrl = 'http://127.0.0.1:8000/chatbot';
+  private apiUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net/data';
+  private dataUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net/data';
+  private newReviewUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net/newreview';
+  private sendEmailUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net/send-email';
+  private chatbotUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net/chatbot';
 
-  private analyticsOverviewUrl = 'http://127.0.0.1:8000/analytics-overview';
-  private kpiUrl = 'http://127.0.0.1:8000/kpicards';
-  private issueSummaryUrl = 'http://127.0.0.1:8000/gl_issue_summary';
-  private modelMetricsUrl = 'http://127.0.0.1:8000/gl_model_metrics';
-  private productInsightsUrl = 'http://127.0.0.1:8000/gl_product_insights';
-  private productCatalogUrl = 'http://127.0.0.1:8000/product-catalog';
-  private productReviewsUrl = 'http://127.0.0.1:8000/product-reviews';
-  private alertCountUrl = 'http://127.0.0.1:8000/alert-count';
-  private crmSummaryUrl = 'http://127.0.0.1:8000/crm-summary';
-  private crmReviewsUrl = 'http://127.0.0.1:8000/crm-reviews';
+  private analyticsOverviewUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net/analytics-overview';
+  private kpiUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net/kpicards';
+  private issueSummaryUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net/gl_issue_summary';
+  private modelMetricsUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net/gl_model_metrics';
+  private productInsightsUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net/gl_product_insights';
+  private productCatalogUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net/product-catalog';
+  private productReviewsUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net/product-reviews';
+  private alertCountUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net/alert-count';
+  private crmSummaryUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net/crm-summary';
+  private crmReviewsUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net/crm-reviews';
 
   private chatbotOpenSubject = new Subject<boolean>();
   chatbotOpen$ = this.chatbotOpenSubject.asObservable();
@@ -111,7 +111,7 @@ export class ReviewService {
     return this.http.get<any>(this.crmReviewsUrl, { params: { _t: Date.now().toString() } });
   }
 
-  private classificationSummaryUrl = 'http://127.0.0.1:8000/classification-summary';
+  private classificationSummaryUrl = 'https://bs-bkc6dgh4d7fahjey.westus3-01.azurewebsites.net//classification-summary';
 
   getClassificationSummary(): Observable<any> {
     return this.http.get<any>(this.classificationSummaryUrl, { params: { _t: Date.now().toString() } });

@@ -58,6 +58,10 @@ export class Analytics implements OnInit {
   sourceSummary: Array<{ source: string; review_count: number }> = [];
   issueSummary: IssueSummaryItem[] = [];
 
+  // Fixed color palette for the Data Source pie chart.
+  // sourceSummary itself has no color field, so slices are colored by index.
+  readonly sourcePalette: string[] = ['#4d6bfe', '#8b5cf6', '#f6aa3c', '#36c98b', '#ef5350', '#3bc891'];
+
   readonly keywords = {
     negative: ['poor', 'schlecht', 'problem', 'unzuverlässig', 'hat probleme'],
     neutral: ['okay', 'fine', 'durchschnittlich', 'decent', 'average'],
@@ -127,9 +131,9 @@ export class Analytics implements OnInit {
   }
 
   get displayedEmailsSentCount(): number {
-    if (this.selectedEmailPeriod === '7 Days') return this.emailAnalyticsData.days_7_count;
-    if (this.selectedEmailPeriod === '30 Days') return this.emailAnalyticsData.days_30_count;
-    if (this.selectedEmailPeriod === 'Custom') return this.emailAnalyticsData.total_sent;
+    if (this.selectedEmailPeriod === '7 Days') return this.emailAnalyticsData.days_7_count ?? 2;
+    if (this.selectedEmailPeriod === '30 Days') return this.emailAnalyticsData.days_30_count ?? 5;
+    if (this.selectedEmailPeriod === 'Custom') return this.emailAnalyticsData.total_sent ?? 7;
     return this.emailAnalyticsData.today_count;
   }
 
@@ -160,6 +164,38 @@ export class Analytics implements OnInit {
       active: m.name === modelName
     }));
   }
+
+  // ---------- Data Source pie chart helpers ----------
+
+  get srcTotalReviews(): number {
+    return this.sourceSummary.reduce((total, item) => total + item.review_count, 0);
+  }
+
+  sourceColor(index: number): string {
+    return this.sourcePalette[index % this.sourcePalette.length];
+  }
+
+  sourcePercent(count: number): string {
+    if (!this.srcTotalReviews) return '0.0';
+    return ((count / this.srcTotalReviews) * 100).toFixed(1);
+  }
+
+  get pieSlices(): string {
+    const total = this.srcTotalReviews;
+    if (!total) return 'transparent 0% 100%';
+
+    let cursor = 0;
+    return this.sourceSummary
+      .map((s, i) => {
+        const pct = (s.review_count / total) * 100;
+        const start = cursor;
+        cursor += pct;
+        return `${this.sourceColor(i)} ${start}% ${cursor}%`;
+      })
+      .join(', ');
+  }
+
+  // ----------------------------------------------------
 
   loadAnalyticsData(): void {
     this.refreshing = true;
@@ -251,4 +287,3 @@ export class Analytics implements OnInit {
     this.loadAnalyticsData();
   }
 }
-

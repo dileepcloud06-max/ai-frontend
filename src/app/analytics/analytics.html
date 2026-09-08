@@ -14,29 +14,124 @@
 	</header>
 
 	<section class="kpi-grid">
-		<article class="kpi-card blue"><div class="kpi-icon">▤</div><div><span>Total Reviews</span><strong>{{ totalReviews | number }}</strong><em>↑ 12%</em><small>vs last month</small></div><div class="sparkline blue-line"></div></article>
-		<article class="kpi-card green"><div class="kpi-icon">●</div><div><span>Positive</span><strong>{{ positiveCount | number }}</strong><small>{{ sentimentPercent(positiveCount) | number:'1.1-1' }}%</small></div><div class="sparkline green-line"></div></article>
-		<article class="kpi-card red"><div class="kpi-icon">●</div><div><span>Negative</span><strong>{{ negativeCount | number }}</strong><small>{{ sentimentPercent(negativeCount) | number:'1.1-1' }}%</small></div><div class="sparkline red-line"></div></article>
-		<article class="kpi-card amber"><div class="kpi-icon">●</div><div><span>Neutral</span><strong>{{ neutralCount | number }}</strong><small>{{ sentimentPercent(neutralCount) | number:'1.1-1' }}%</small></div><div class="sparkline amber-line"></div></article>
+		<article class="kpi-card blue"><div class="kpi-icon">▤</div><div><span>Total Reviews   &nbsp;</span><strong>{{ totalReviews | number }}</strong><em>↑ 12%</em><small>vs last month</small></div><div class="sparkline blue-line"></div></article>
+		<article class="kpi-card green"><div class="kpi-icon">●</div><div><span>Positive &nbsp;</span><strong>{{ positiveCount | number }}</strong><small>{{ sentimentPercent(positiveCount) | number:'1.1-1' }}%</small></div><div class="sparkline green-line"></div></article>
+		<article class="kpi-card red"><div class="kpi-icon">●</div><div><span>Negative &nbsp;</span><strong>{{ negativeCount | number }}</strong><small>{{ sentimentPercent(negativeCount) | number:'1.1-1' }}%</small></div><div class="sparkline red-line"></div></article>
+		<article class="kpi-card amber"><div class="kpi-icon">●</div><div><span>Neutral &nbsp;</span><strong>{{ neutralCount | number }}</strong><small>{{ sentimentPercent(neutralCount) | number:'1.1-1' }}%</small></div><div class="sparkline amber-line"></div></article>
 	</section>
 
 	<section class="chart-grid top-charts">
-		<article class="panel sentiment-panel"><div class="panel-heading"><h2>▥ &nbsp;Sentiment Distribution</h2><span>{{ totalReviews | number }} Reviews</span></div><div class="bar-chart"><div class="axis"><span>3,500</span><span>2,500</span><span>1,500</span><span>500</span><span>0</span></div><div class="bars"><div class="bar-item" *ngFor="let item of sentiment"><strong>{{ item.value | number }}</strong><div class="bar" [style.height.%]="barHeight(item.value)" [style.background]="item.color"></div><span>{{ item.label }}</span></div></div></div></article>
-		<article class="panel source-panel"><div class="panel-heading"><h2>▤ &nbsp;Data Source</h2><span>{{ totalReviews | number }} Reviews</span></div><div class="source-legend"><span *ngFor="let source of sourceSummary"><i class="dot amazon"></i>{{ source.source }} <b>{{ source.review_count | number }} reviews</b></span><span *ngIf="!sourceSummary.length">No source data available.</span></div></article>
-		<article class="panel email-panel"><div class="panel-heading"><h2>✉ &nbsp;Emails Sent</h2><div class="segmented"><button [class.selected]="selectedEmailPeriod === 'Today'" (click)="selectEmailPeriod('Today')">Today</button><button [class.selected]="selectedEmailPeriod === '7 Days'" (click)="selectEmailPeriod('7 Days')">7 Days</button><button [class.selected]="selectedEmailPeriod === '30 Days'" (click)="selectEmailPeriod('30 Days')">30 Days</button><button [class.selected]="selectedEmailPeriod === 'Custom'" (click)="selectEmailPeriod('Custom')">Custom</button></div></div><div class="email-summary"><div><strong>{{ displayedEmailsSentCount | number }}</strong><small>{{ displayedEmailPeriodLabel }}</small></div><div class="total-sent"><b>✉</b><strong>{{ emailAnalyticsData.total_sent | number }}</strong><small>Total Sent</small></div></div></article>
+		<article class="panel sentiment-panel">
+			<div class="panel-heading"><h2>▥ &nbsp;Sentiment Distribution</h2><span>{{ totalReviews | number }} Reviews</span></div>
+			<div class="bar-chart">
+				<div class="axis"><span>3,500</span><span>2,500</span><span>1,500</span><span>500</span><span>0</span></div>
+				<div class="bars">
+					<div class="bar-item" *ngFor="let item of sentiment">
+						<strong>{{ item.value | number }}</strong>
+						<div class="bar" [style.height.%]="barHeight(item.value)" [style.background]="item.color"></div>
+						<span>{{ item.label }}</span>
+					</div>
+				</div>
+			</div>
+		</article>
+
+		<article class="panel source-panel">
+			<div class="panel-heading"><h2>▤ &nbsp;Data Source</h2><span>{{ srcTotalReviews | number }} Reviews</span></div>
+			<div class="source-chart" *ngIf="sourceSummary.length; else noSource">
+				<div class="pie-wrap">
+					<div class="pie" [style.--slices]="pieSlices"></div>
+					<div class="pie-hole">
+						<strong>{{ srcTotalReviews | number }}</strong>
+						<span>reviews</span>
+					</div>
+				</div>
+				<div class="legend">
+					<div class="legend-row" *ngFor="let s of sourceSummary; let i = index">
+						<div class="legend-top">
+							<i class="dot" [style.background]="sourceColor(i)"></i>{{ s.source }} — {{ sourcePercent(s.review_count) }}%
+						</div>
+						<div class="legend-sub">{{ s.review_count | number }} reviews</div>
+					</div>
+				</div>
+			</div>
+			<ng-template #noSource><span class="empty">No source data available.</span></ng-template>
+		</article>
+
+		<article class="panel email-panel">
+			<div class="panel-heading">
+				<h2>✉ &nbsp;Emails Sent</h2>
+				<div class="segmented">
+					<button [class.selected]="selectedEmailPeriod === 'Today'" (click)="selectEmailPeriod('Today')">Today</button>
+					<button [class.selected]="selectedEmailPeriod === '7 Days'" (click)="selectEmailPeriod('7 Days')">7 Days</button>
+					<button [class.selected]="selectedEmailPeriod === '30 Days'" (click)="selectEmailPeriod('30 Days')">30 Days</button>
+					<button [class.selected]="selectedEmailPeriod === 'Custom'" (click)="selectEmailPeriod('Custom')">Custom</button>
+				</div>
+			</div>
+			<div class="email-summary">
+				<div><strong>{{ displayedEmailsSentCount | number }}</strong><small>{{ displayedEmailPeriodLabel }}</small></div>
+				<div class="total-sent"><b>✉</b><strong>{{ emailAnalyticsData.total_sent | number }}</strong><small>Total Sent</small></div>
+			</div>
+		</article>
 	</section>
 
 	<section class="issue-summary-section">
-		<article class="panel issue-summary-panel"><div class="panel-heading"><h2>▤ &nbsp;Issue Summary</h2><span>{{ issueSummary.length }} Issue Types</span></div><div class="issue-summary-list"><div class="issue-summary-row issue-summary-head"><span>Issue Type</span><span>Reviews</span><span>Negative</span><span>High Priority</span><span>Share</span></div><div class="issue-summary-row" *ngFor="let issue of issueSummary"><span>{{ issue.issue_type }}</span><strong>{{ issue.review_count | number }}</strong><span>{{ issue.negative_count | number }}</span><span>{{ issue.high_priority_count | number }}</span><span>{{ issue.percentage }}%</span></div><p class="empty-state" *ngIf="!issueSummary.length">No issue summary data available.</p></div></article>
+		<article class="panel issue-summary-panel">
+			<div class="panel-heading"><h2>▤ &nbsp;Issue Summary</h2><span>{{ issueSummary.length }} Issue Types</span></div>
+			<div class="issue-summary-list">
+				<div class="issue-summary-row issue-summary-head"><span>Issue Type</span><span>Reviews</span><span>Negative</span><span>High Priority</span><span>Share</span></div>
+				<div class="issue-summary-row" *ngFor="let issue of issueSummary"><span>{{ issue.issue_type }}</span><strong>{{ issue.review_count | number }}</strong><span>{{ issue.negative_count | number }}</span><span>{{ issue.high_priority_count | number }}</span><span>{{ issue.percentage }}%</span></div>
+				<p class="empty-state" *ngIf="!issueSummary.length">No issue summary data available.</p>
+			</div>
+		</article>
 	</section>
 
 	<section class="chart-grid model-charts">
-		<article class="panel model-panel"><div class="panel-heading"><h2>◉ &nbsp;Model Performance</h2></div><div class="model-table"><div class="model-row model-head"><span>Model</span><span>Accuracy</span><span>Precision</span><span>Recall</span><span>F1 Score</span></div><div class="model-row" *ngFor="let model of models" [class.highlight]="model.active" (click)="selectModel(model.name)"><span>{{ model.name }}</span><span>{{ model.accuracy }}%</span><span>{{ model.precision }}%</span><span>{{ model.recall }}%</span><span>{{ model.f1 }}%</span></div><p class="empty-state" *ngIf="!models.length">Model metrics are unavailable while the analytics data source is offline.</p></div></article>
-		<article class="panel metrics-panel"><div class="panel-heading"><h2>▥ &nbsp;Model Metrics <small>({{ selectedModelName }})</small></h2><div class="model-selector-pills"><button *ngFor="let model of models" [class.active]="model.name === selectedModelName" (click)="selectModel(model.name)">{{ model.name }}</button></div></div><div class="metric-bars"><div *ngFor="let metric of selectedModelMetrics" class="metric-bar"><strong>{{ metric.value }}%</strong><div class="metric-column" [style.height.%]="metric.value" [style.background]="metric.color"></div><span>{{ metric.name }}</span></div></div></article>
+		<article class="panel model-panel">
+			<div class="panel-heading"><h2>◉ &nbsp;Model Performance</h2></div>
+			<div class="model-table">
+				<div class="model-row model-head"><span>Model</span><span>Accuracy</span><span>Precision</span><span>Recall</span><span>F1 Score</span></div>
+				<div class="model-row" *ngFor="let model of models" [class.highlight]="model.active" (click)="selectModel(model.name)"><span>{{ model.name }}</span><span>{{ model.accuracy }}%</span><span>{{ model.precision }}%</span><span>{{ model.recall }}%</span><span>{{ model.f1 }}%</span></div>
+				<p class="empty-state" *ngIf="!models.length">Model metrics are unavailable while the analytics data source is offline.</p>
+			</div>
+		</article>
+
+		<article class="panel metrics-panel">
+			<div class="panel-heading">
+				<h2>▥ &nbsp;Model Metrics <small>({{ selectedModelName }})</small></h2>
+				<div class="model-selector-pills">
+					<button *ngFor="let model of models" [class.active]="model.name === selectedModelName" (click)="selectModel(model.name)">{{ model.name }}</button>
+				</div>
+			</div>
+			<div class="metric-bars">
+				<div *ngFor="let metric of selectedModelMetrics" class="metric-bar">
+					<strong>{{ metric.value }}%</strong>
+					<div class="metric-column" [style.height.%]="metric.value" [style.background]="metric.color"></div>
+					<span>{{ metric.name }}</span>
+				</div>
+			</div>
+		</article>
 	</section>
 
 	<section class="bottom-grid">
-		<article class="panel keywords-panel"><div class="panel-heading"><h2>⌁ &nbsp;Top Keywords by Sentiment <small>(TF-IDF)</small></h2></div><div class="keyword-columns"><div class="keyword-group negative"><h3>● Negative</h3><ol><li *ngFor="let word of keywords.negative">{{ word }}</li></ol></div><div class="keyword-group neutral"><h3>● Neutral</h3><ol><li *ngFor="let word of keywords.neutral">{{ word }}</li></ol></div><div class="keyword-group positive"><h3>● Positive</h3><ol><li *ngFor="let word of keywords.positive">{{ word }}</li></ol></div></div></article>
-		<article class="panel insights-panel"><div class="panel-heading"><h2>● &nbsp;Key Insights</h2></div><ul><li>Model performs well with 92.36% accuracy using Linear Regression.</li><li>Negative reviews are the highest (47.9%) in the dataset.</li><li>Amazon is the largest data source (60%).</li><li>XLM-RoBERTa has the best overall performance.</li><li>Increasing positive reviews can improve product recommendations.</li></ul><span class="insight-note">Insights<br>today<br><b>Better products<br>tomorrow</b></span></article>
+		<article class="panel keywords-panel">
+			<div class="panel-heading"><h2>⌁ &nbsp;Top Keywords by Sentiment <small>(TF-IDF)</small></h2></div>
+			<div class="keyword-columns">
+				<div class="keyword-group negative"><h3>● Negative</h3><ol><li *ngFor="let word of keywords.negative">{{ word }}</li></ol></div>
+				<div class="keyword-group neutral"><h3>● Neutral</h3><ol><li *ngFor="let word of keywords.neutral">{{ word }}</li></ol></div>
+				<div class="keyword-group positive"><h3>● Positive</h3><ol><li *ngFor="let word of keywords.positive">{{ word }}</li></ol></div>
+			</div>
+		</article>
+
+		<article class="panel insights-panel">
+			<div class="panel-heading"><h2>● &nbsp;Key Insights</h2></div>
+			<ul>
+				<li>Model performs well with 92.36% accuracy using Linear Regression.</li>
+				<li>Negative reviews are the highest (47.9%) in the dataset.</li>
+				<li>Amazon is the largest data source (60%).</li>
+				<li>XLM-RoBERTa has the best overall performance.</li>
+				<li>Increasing positive reviews can improve product recommendations.</li>
+			</ul>
+			<span class="insight-note">Insights<br>today<br><b>Better products<br>tomorrow</b></span>
+		</article>
 	</section>
 </main>
