@@ -56,7 +56,7 @@ async sendEmail(review: any): Promise<void> {
 
     const emailPayload = {
       // email lekapothe test email
-      email: review.email || "dileepottikunta@gmail.com",
+      email: review.email || "urekhanuthalapati@gmail.com",
 
       // payload lo problem send chestunnam
       payload: review.problem_summary || review.problem || review.review_text || "",

@@ -448,7 +448,7 @@ export class BulkEmailComponent implements OnInit {
   // Email Action - Open Modal for Card
   openEmailModal(review: ReviewItem): void {
     this.selectedReviewForEmail = review;
-    this.recipientEmail = 'dileepottikunta@gmail.com'; // Default or customer email
+    this.recipientEmail = 'urekhanuthalapati@gmail.com'; // Default or customer email
     this.emailSubject = `Regarding your review for ${review.product}`;
     this.emailSolution = review.recommended_solution || 'We appreciate your feedback and are looking into this issue to improve your experience.';
     this.showEmailModal = true;
